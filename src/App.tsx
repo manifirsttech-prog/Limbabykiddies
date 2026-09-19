@@ -37,17 +37,17 @@ function DocumentTitle() {
   const { pathname } = useLocation();
   useEffect(() => {
     const titles: Record<string, string> = {
-      '/': 'LittleBloom — Baby & Kids Products | Little Things, Big Smiles',
-      '/products': 'Shop Baby & Kids Products | LittleBloom',
-      '/cart': 'Shopping Cart | LittleBloom',
-      '/about': 'About Us | LittleBloom — Our Story & Mission',
-      '/contact': 'Contact Us | LittleBloom — Get in Touch',
-      '/admin/login': 'Admin Login | LittleBloom',
-      '/admin/dashboard': 'Admin Dashboard | LittleBloom',
-      '/admin/dashboard/orders': 'Order Management | LittleBloom Admin',
-      '/admin/dashboard/products': 'Product Management | LittleBloom Admin',
+      '/': 'Limbaby kiddies — Baby & Kids Products | Little Things, Big Smiles',
+      '/products': 'Shop Baby & Kids Products | Limbaby kiddies',
+      '/cart': 'Shopping Cart | Limbaby kiddies',
+      '/about': 'About Us | Limbaby kiddies — Our Story & Mission',
+      '/contact': 'Contact Us | Limbaby kiddies — Get in Touch',
+      '/admin/login': 'Admin Login | Limbaby kiddies',
+      '/admin/dashboard': 'Admin Dashboard | Limbaby kiddies',
+      '/admin/dashboard/orders': 'Order Management | Limbaby kiddies Admin',
+      '/admin/dashboard/products': 'Product Management | Limbaby kiddies Admin',
     };
-    document.title = titles[pathname] || 'LittleBloom — Baby & Kids Products';
+    document.title = titles[pathname] || 'Limbaby kiddies — Baby & Kids Products';
   }, [pathname]);
   return null;
 }

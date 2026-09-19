@@ -189,7 +189,7 @@ export default function HomePage() {
                 Made with <GiHeartBeats className="text-pink-500" /> Love, for the Ones You Love Most
               </h2>
               <p className="text-gray-600 leading-relaxed mb-4">
-                At LittleBloom, we believe every child deserves the best start in life. That's why we carefully
+                At Limbaby kiddies, we believe every child deserves the best start in life. That's why we carefully
                 select every product in our collection — from the softest fabrics to the safest materials.
               </p>
               <p className="text-gray-600 leading-relaxed mb-6">
@@ -303,7 +303,7 @@ export default function HomePage() {
               Give Your Little One the Best Start
             </h2>
             <p className="text-pink-100 text-lg mb-8 max-w-2xl mx-auto">
-              Join thousands of parents who trust LittleBloom for quality, safe, and delightful products for their children.
+              Join thousands of parents who trust Limbaby kiddies for quality, safe, and delightful products for their children.
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link

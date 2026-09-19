@@ -15,7 +15,7 @@ export default function AboutPage() {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Our Story</h1>
             <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
-              LittleBloom was born from a simple belief: every child deserves products that are safe,
+              Limbaby kiddies was born from a simple belief: every child deserves products that are safe,
               beautiful, and made with love. We're here to support parents on their most important journey.
             </p>
           </motion.div>
@@ -35,13 +35,13 @@ export default function AboutPage() {
                 From Parents, For Parents <FiHeart className="text-pink-500" />
               </h2>
               <p className="text-gray-600 leading-relaxed mb-4">
-                LittleBloom started in 2020 when our founders — both parents of young children —
+                Limbaby kiddies started in 2020 when our founders — both parents of young children —
                 struggled to find a single trusted place for quality baby and kids products. They
                 wanted safety-certified car seats, organic clothing, educational toys, and everything
                 in between, without compromising on quality or style.
               </p>
               <p className="text-gray-600 leading-relaxed mb-4">
-                So they built LittleBloom. A place where parents can shop with confidence, knowing
+                So they built Limbaby kiddies. A place where parents can shop with confidence, knowing
                 every product has been carefully vetted for safety, quality, and joy.
               </p>
               <p className="text-gray-600 leading-relaxed">
@@ -106,7 +106,7 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Because Every Moment Matters</h2>
             <p className="text-lg text-gray-600 leading-relaxed mb-6">
               Childhood is fleeting. The first steps, the first words, the first day of school —
-              these moments shape who our children become. At LittleBloom, we're honored to be part
+              these moments shape who our children become. At Limbaby kiddies, we're honored to be part
               of these journeys, providing the tools, comfort, and joy that make each day a little
               more magical.
             </p>

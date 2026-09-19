@@ -37,8 +37,8 @@ export default function ContactPage() {
                     </motion.div>
                     <div>
                       <h3 className="font-medium text-gray-900">Email</h3>
-                      <p className="text-gray-600">hello@littlebloom.com</p>
-                      <p className="text-gray-600">support@littlebloom.com</p>
+                      <p className="text-gray-600">hello@limbabykiddies.com</p>
+                      <p className="text-gray-600">support@limbabykiddies.com</p>
                     </div>
                   </motion.div>
                   <motion.div whileHover={{ x: 5 }} className="flex items-start gap-4 p-4 rounded-xl hover:bg-blue-50 transition-colors">

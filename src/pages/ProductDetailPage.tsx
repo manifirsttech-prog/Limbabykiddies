@@ -45,7 +45,7 @@ export default function ProductDetailPage() {
     name: product.name,
     image: product.images,
     description: product.description,
-    brand: { '@type': 'Brand', name: 'LittleBloom' },
+    brand: { '@type': 'Brand', name: 'Limbaby kiddies' },
     offers: {
       '@type': 'Offer',
       price: product.price,

@@ -19,7 +19,7 @@ export default function Footer() {
             <Link to="/" className="flex items-center gap-2 mb-4">
               <GiBabyBottle className="h-7 w-7 text-pink-400" />
               <span className="text-lg font-bold text-white">
-                Little<span className="text-pink-400">Bloom</span>
+                Limbaby <span className="text-pink-400">kiddies</span>
               </span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
@@ -99,7 +99,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm">
                 <FiMail className="h-4 w-4 text-pink-400" />
-                <span>hello@littlebloom.com</span>
+                <span>hello@limbabykiddies.com</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <FiPhone className="h-4 w-4 text-pink-400" />
@@ -121,7 +121,7 @@ export default function Footer() {
           className="border-t border-gray-800 mt-10 pt-6 text-center"
         >
           <p className="text-sm text-gray-500 flex items-center justify-center gap-1">
-            © {new Date().getFullYear()} LittleBloom. All rights reserved. Made with
+            © {new Date().getFullYear()} Limbaby kiddies. All rights reserved. Made with
             <motion.span animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
               <FiHeart className="inline text-pink-400 mx-1" />
             </motion.span>

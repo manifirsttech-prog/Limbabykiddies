@@ -32,7 +32,7 @@ export default function Navbar() {
               <GiBabyBottle className="h-8 w-8 text-pink-500" />
             </motion.div>
             <span className="text-xl font-bold text-gray-900">
-              Little<span className="text-pink-500">Bloom</span>
+              Limbaby <span className="text-pink-500">kiddies</span>
             </span>
           </Link>
 
