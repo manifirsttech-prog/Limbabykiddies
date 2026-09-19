@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Baby, Search } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiShoppingCart, FiMenu, FiX, FiSearch } from 'react-icons/fi';
+import { GiBabyBottle } from 'react-icons/gi';
 import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
@@ -11,22 +13,34 @@ export default function Navbar() {
   const isActive = (path: string) => location.pathname === path;
 
   const navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/products', label: 'Shop' },
-    { path: '/about', label: 'About' },
-    { path: '/contact', label: 'Contact' },
+    { path: '/', label: 'Home', emoji: '🏠' },
+    { path: '/products', label: 'Shop', emoji: '🛍️' },
+    { path: '/about', label: 'About', emoji: '💫' },
+    { path: '/contact', label: 'Contact', emoji: '📞' },
   ];
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-pink-100">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <Baby className="h-8 w-8 text-pink-500" />
+          <Link to="/" className="flex items-center gap-2 group">
+            <motion.div
+              whileHover={{ rotate: [0, -10, 10, 0] }}
+              transition={{ duration: 0.5 }}
+            >
+              <GiBabyBottle className="h-8 w-8 text-pink-500" />
+            </motion.div>
             <span className="text-xl font-bold text-gray-900">
               Little<span className="text-pink-500">Bloom</span>
             </span>
+            <motion.span
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="text-lg"
+            >
+              ✨
+            </motion.span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -35,10 +49,11 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-sm font-medium transition-colors hover:text-pink-500 ${
-                  isActive(link.path) ? 'text-pink-500' : 'text-gray-700'
+                className={`flex items-center gap-1.5 text-sm font-medium transition-all hover:scale-105 ${
+                  isActive(link.path) ? 'text-pink-500' : 'text-gray-700 hover:text-pink-500'
                 }`}
               >
+                <span className="text-base">{link.emoji}</span>
                 {link.label}
               </Link>
             ))}
@@ -47,43 +62,65 @@ export default function Navbar() {
           {/* Right Actions */}
           <div className="flex items-center gap-4">
             <Link to="/products" className="hidden sm:block text-gray-600 hover:text-pink-500 transition-colors">
-              <Search className="h-5 w-5" />
+              <FiSearch className="h-5 w-5" />
             </Link>
-            <Link to="/cart" className="relative text-gray-600 hover:text-pink-500 transition-colors">
-              <ShoppingCart className="h-6 w-6" />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                  {totalItems}
-                </span>
-              )}
+            <Link to="/cart" className="relative text-gray-600 hover:text-pink-500 transition-all hover:scale-110">
+              <FiShoppingCart className="h-6 w-6" />
+              <AnimatePresence>
+                {totalItems > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold shadow-lg"
+                  >
+                    {totalItems}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </Link>
             <button
-              className="md:hidden text-gray-600"
+              className="md:hidden text-gray-600 hover:text-pink-500 transition-colors"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isOpen ? <FiX className="h-6 w-6" /> : <FiMenu className="h-6 w-6" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden border-t border-gray-100 py-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className={`block py-2 text-sm font-medium transition-colors hover:text-pink-500 ${
-                  isActive(link.path) ? 'text-pink-500' : 'text-gray-700'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        )}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden border-t border-pink-100 py-4 overflow-hidden"
+            >
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={link.path}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <Link
+                    to={link.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-2 py-2 text-sm font-medium transition-colors ${
+                      isActive(link.path) ? 'text-pink-500' : 'text-gray-700 hover:text-pink-500'
+                    }`}
+                  >
+                    <span className="text-lg">{link.emoji}</span>
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
     </header>
   );

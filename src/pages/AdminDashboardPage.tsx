@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Baby, LayoutDashboard, Package, LogOut, DollarSign, ShoppingCart,
   PackageCheck, AlertTriangle, TrendingUp, Plus, Edit, Trash2, X,
@@ -7,6 +8,7 @@ import {
 } from 'lucide-react';
 import { products as initialProducts } from '../data/products';
 import { Product, ProductCategory } from '../types/product';
+import AnimatedEmoji from '../components/AnimatedEmoji';
 
 // Mock data for dashboard
 const mockOrders = [
@@ -88,30 +90,31 @@ export default function AdminDashboardPage() {
           <Link to="/" className="flex items-center gap-2">
             <Baby className="h-7 w-7 text-pink-500" />
             <span className="text-lg font-bold text-gray-900">Little<span className="text-pink-500">Bloom</span></span>
+            <AnimatedEmoji emoji="✨" size="sm" animation="pulse" />
           </Link>
-          <p className="text-xs text-gray-500 mt-1">Admin Panel</p>
+          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">🎛️ Admin Panel</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
           <Link
             to="/admin/dashboard"
-            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${
               activeTab === 'overview' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
-            <LayoutDashboard className="h-4 w-4" /> Overview
+            <LayoutDashboard className="h-4 w-4" /> 📊 Overview
           </Link>
           <Link
             to="/admin/dashboard/products"
-            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${
               activeTab === 'products' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
-            <Package className="h-4 w-4" /> Products
+            <Package className="h-4 w-4" /> 📦 Products
           </Link>
         </nav>
         <div className="p-4 border-t border-gray-100">
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
-            <LogOut className="h-4 w-4" /> Logout
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all hover:scale-105">
+            <LogOut className="h-4 w-4" /> 🚪 Logout
           </button>
         </div>
       </aside>
@@ -122,17 +125,17 @@ export default function AdminDashboardPage() {
         <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
           <div className="lg:hidden flex items-center gap-2">
             <Baby className="h-6 w-6 text-pink-500" />
-            <span className="font-bold text-gray-900">Admin</span>
+            <span className="font-bold text-gray-900">🎛️ Admin</span>
           </div>
-          <h1 className="text-lg font-bold text-gray-900 hidden lg:block">
-            {activeTab === 'overview' ? 'Dashboard Overview' : 'Product Management'}
+          <h1 className="text-lg font-bold text-gray-900 hidden lg:block flex items-center gap-2">
+            {activeTab === 'overview' ? '📊 Dashboard Overview' : '📦 Product Management'}
           </h1>
           {/* Mobile tabs */}
           <div className="flex gap-2 lg:hidden">
-            <Link to="/admin/dashboard" className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === 'overview' ? 'bg-pink-100 text-pink-700' : 'bg-gray-100 text-gray-600'}`}>Overview</Link>
-            <Link to="/admin/dashboard/products" className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === 'products' ? 'bg-pink-100 text-pink-700' : 'bg-gray-100 text-gray-600'}`}>Products</Link>
+            <Link to="/admin/dashboard" className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === 'overview' ? 'bg-pink-100 text-pink-700' : 'bg-gray-100 text-gray-600'}`}>📊 Overview</Link>
+            <Link to="/admin/dashboard/products" className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === 'products' ? 'bg-pink-100 text-pink-700' : 'bg-gray-100 text-gray-600'}`}>📦 Products</Link>
           </div>
-          <div className="text-sm text-gray-500">Welcome, Admin</div>
+          <div className="text-sm text-gray-500 flex items-center gap-1">👋 Welcome, Admin</div>
         </header>
 
         <main className="flex-1 p-6 overflow-auto">
@@ -150,17 +153,33 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Product Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-lg font-bold text-gray-900">
-                {editingProduct ? 'Edit Product' : 'Add New Product'}
-              </h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl"
+            >
+              <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  {editingProduct ? '✏️ Edit Product' : '➕ Add New Product'}
+                </h2>
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </motion.button>
+              </div>
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
@@ -196,59 +215,96 @@ export default function AdminDashboardPage() {
               </div>
             </div>
             <div className="flex gap-3 p-6 border-t border-gray-100">
-              <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
-              <button onClick={handleSave} className="flex-1 px-4 py-2.5 bg-pink-500 hover:bg-pink-600 text-white rounded-lg text-sm font-medium">
-                {editingProduct ? 'Update' : 'Add Product'}
-              </button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowModal(false)}
+                className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
+              >
+                ❌ Cancel
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleSave}
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all"
+              >
+                {editingProduct ? '💾 Update' : '➕ Add Product'}
+              </motion.button>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
 function OverviewSection() {
   const stats = [
-    { label: 'Total Revenue', value: '$12,458', icon: DollarSign, color: 'bg-green-100 text-green-600' },
-    { label: 'Total Orders', value: '156', icon: ShoppingCart, color: 'bg-blue-100 text-blue-600' },
-    { label: 'Total Products', value: '12', icon: PackageCheck, color: 'bg-purple-100 text-purple-600' },
-    { label: 'Pending Orders', value: '8', icon: AlertTriangle, color: 'bg-yellow-100 text-yellow-600' },
+    { label: 'Total Revenue', value: '$12,458', icon: DollarSign, color: 'bg-green-100 text-green-600', emoji: '💰' },
+    { label: 'Total Orders', value: '156', icon: ShoppingCart, color: 'bg-blue-100 text-blue-600', emoji: '📦' },
+    { label: 'Total Products', value: '12', icon: PackageCheck, color: 'bg-purple-100 text-purple-600', emoji: '🛍️' },
+    { label: 'Pending Orders', value: '8', icon: AlertTriangle, color: 'bg-yellow-100 text-yellow-600', emoji: '⏳' },
   ];
 
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-5">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            whileHover={{ scale: 1.05, y: -5 }}
+            className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all"
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p className="text-sm text-gray-500 flex items-center gap-1">
+                  <span>{stat.emoji}</span> {stat.label}
+                </p>
                 <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
               </div>
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.color}`}>
-                <stat.icon className="h-5 w-5" />
-              </div>
+              <motion.div
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.color}`}
+              >
+                <stat.icon className="h-6 w-6" />
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Sales Chart Placeholder */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="bg-white rounded-2xl border-2 border-gray-100 p-6 hover:shadow-lg transition-all"
+      >
         <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <BarChart3 className="h-5 w-5 text-pink-500" /> Sales Overview
+          <BarChart3 className="h-5 w-5 text-pink-500" /> 📈 Sales Overview
         </h3>
-        <div className="h-48 bg-gradient-to-t from-pink-50 to-white rounded-lg flex items-end justify-around px-4 pb-4">
+        <div className="h-48 bg-gradient-to-t from-pink-50 to-white rounded-xl flex items-end justify-around px-4 pb-4">
           {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
-            <div key={day} className="flex flex-col items-center gap-1">
-              <div className={`w-8 bg-pink-400 rounded-t-sm`} style={{ height: `${[40, 65, 50, 80, 60, 90, 70][i]}%` }}></div>
+            <motion.div
+              key={day}
+              initial={{ height: 0 }}
+              animate={{ height: `${[40, 65, 50, 80, 60, 90, 70][i]}%` }}
+              transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
+              className="flex flex-col items-center gap-1"
+            >
+              <div className={`w-8 bg-gradient-to-t from-pink-500 to-pink-400 rounded-t-lg`} style={{ height: '100%' }}></div>
               <span className="text-xs text-gray-500">{day}</span>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Orders */}
@@ -326,15 +382,23 @@ function ProductsSection({
 }) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-gray-500">{products.length} products total</p>
-        <button
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between mb-6"
+      >
+        <p className="text-sm text-gray-500 flex items-center gap-2">
+          <span>📊</span> {products.length} products total
+        </p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={onAdd}
-          className="flex items-center gap-2 bg-pink-500 hover:bg-pink-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition-all shadow-lg shadow-pink-200"
         >
-          <Plus className="h-4 w-4" /> Add Product
-        </button>
-      </div>
+          <Plus className="h-4 w-4" /> ➕ Add Product
+        </motion.button>
+      </motion.div>
 
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
