@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { GiBabyBottle } from 'react-icons/gi';
 import { FiMail, FiPhone, FiMapPin, FiHeart } from 'react-icons/fi';
-import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
+import { FaInstagram, FaWhatsapp } from 'react-icons/fa';
 
 export default function Footer() {
   return (
@@ -29,11 +29,13 @@ export default function Footer() {
               <motion.a
                 whileHover={{ scale: 1.2, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
-                href="#"
-                className="w-9 h-9 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-pink-400 hover:bg-pink-900/30 transition-colors"
-                aria-label="Facebook"
+                href="https://wa.me/2349048298906"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-green-400 hover:bg-green-900/30 transition-colors"
+                aria-label="WhatsApp"
               >
-                <FaFacebookF className="h-4 w-4" />
+                <FaWhatsapp className="h-4 w-4" />
               </motion.a>
               <motion.a
                 whileHover={{ scale: 1.2, rotate: 5 }}
@@ -43,15 +45,6 @@ export default function Footer() {
                 aria-label="Instagram"
               >
                 <FaInstagram className="h-4 w-4" />
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.2, rotate: 5 }}
-                whileTap={{ scale: 0.9 }}
-                href="#"
-                className="w-9 h-9 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-pink-400 hover:bg-pink-900/30 transition-colors"
-                aria-label="Twitter"
-              >
-                <FaTwitter className="h-4 w-4" />
               </motion.a>
             </div>
           </motion.div>
@@ -99,15 +92,15 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm">
                 <FiMail className="h-4 w-4 text-pink-400" />
-                <span>hello@limbabykiddies.com</span>
+                <span>adelekelollipop@gmail.com</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <FiPhone className="h-4 w-4 text-pink-400" />
-                <span>+1 (555) 123-4567</span>
+                <span>+2349048298906</span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <FiMapPin className="h-4 w-4 text-pink-400" />
-                <span>123 Kids Lane, Happy Town</span>
+              <li className="flex items-start gap-2 text-sm">
+                <FiMapPin className="h-4 w-4 text-pink-400 mt-0.5" />
+                <span>E-mail Opp., to Royal Pine Estate, Before Van Daniel's Street, Orchid Road, Lekki, Lagos State.</span>
               </li>
             </ul>
           </motion.div>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiMail, FiPhone, FiMapPin, FiSend } from 'react-icons/fi';
-import { FaFacebookF, FaInstagram, FaTwitter, FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
+import { FaInstagram, FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
 import AnimatedSection from '../components/AnimatedSection';
 
 export default function ContactPage() {
@@ -37,8 +37,7 @@ export default function ContactPage() {
                     </motion.div>
                     <div>
                       <h3 className="font-medium text-gray-900">Email</h3>
-                      <p className="text-gray-600">hello@limbabykiddies.com</p>
-                      <p className="text-gray-600">support@limbabykiddies.com</p>
+                      <p className="text-gray-600">adelekelollipop@gmail.com</p>
                     </div>
                   </motion.div>
                   <motion.div whileHover={{ x: 5 }} className="flex items-start gap-4 p-4 rounded-xl hover:bg-blue-50 transition-colors">
@@ -47,8 +46,8 @@ export default function ContactPage() {
                     </motion.div>
                     <div>
                       <h3 className="font-medium text-gray-900">Phone</h3>
-                      <p className="text-gray-600">+1 (555) 123-4567</p>
-                      <p className="text-sm text-gray-500">Mon - Fri, 9am - 6pm</p>
+                      <p className="text-gray-600">+2349048298906</p>
+                      <p className="text-sm text-gray-500">Mon - Sat, 9am - 6pm</p>
                     </div>
                   </motion.div>
                   <motion.div whileHover={{ x: 5 }} className="flex items-start gap-4 p-4 rounded-xl hover:bg-green-50 transition-colors">
@@ -57,7 +56,7 @@ export default function ContactPage() {
                     </motion.div>
                     <div>
                       <h3 className="font-medium text-gray-900">WhatsApp</h3>
-                      <p className="text-gray-600">+1 (555) 123-4567</p>
+                      <p className="text-gray-600">+2349048298906</p>
                       <p className="text-sm text-gray-500">Quick responses during business hours</p>
                     </div>
                   </motion.div>
@@ -67,7 +66,7 @@ export default function ContactPage() {
                     </motion.div>
                     <div>
                       <h3 className="font-medium text-gray-900">Address</h3>
-                      <p className="text-gray-600">123 Kids Lane, Happy Town, HT 10001</p>
+                      <p className="text-gray-600">E-mail Opp., to Royal Pine Estate, Before Van Daniel's Street, Orchid Road, Lekki, Lagos State.</p>
                     </div>
                   </motion.div>
                 </div>
@@ -75,14 +74,11 @@ export default function ContactPage() {
                 <div className="mt-8">
                   <h3 className="font-medium text-gray-900 mb-3">Follow Us</h3>
                   <div className="flex gap-3">
-                    <motion.a whileHover={{ scale: 1.2, rotate: 10 }} whileTap={{ scale: 0.9 }} href="#" className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-600 transition-colors" aria-label="Facebook">
-                      <FaFacebookF className="h-5 w-5" />
+                    <motion.a whileHover={{ scale: 1.2, rotate: 10 }} whileTap={{ scale: 0.9 }} href="#" className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 hover:bg-green-100 hover:text-green-600 transition-colors" aria-label="WhatsApp">
+                      <FaWhatsapp className="h-5 w-5" />
                     </motion.a>
                     <motion.a whileHover={{ scale: 1.2, rotate: 10 }} whileTap={{ scale: 0.9 }} href="#" className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 hover:bg-pink-100 hover:text-pink-600 transition-colors" aria-label="Instagram">
                       <FaInstagram className="h-5 w-5" />
-                    </motion.a>
-                    <motion.a whileHover={{ scale: 1.2, rotate: 10 }} whileTap={{ scale: 0.9 }} href="#" className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-400 transition-colors" aria-label="Twitter">
-                      <FaTwitter className="h-5 w-5" />
                     </motion.a>
                   </div>
                 </div>

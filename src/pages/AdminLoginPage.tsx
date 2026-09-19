@@ -12,10 +12,10 @@ export default function AdminLoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === 'admin@limbabykiddies.com' && password === 'admin123') {
+    if (email === 'adelekelollipop@gmail.com' && password === 'admin123') {
       navigate('/admin/dashboard');
     } else {
-      setError('Invalid credentials. Use admin@limbabykiddies.com / admin123');
+      setError('Invalid credentials. Use adelekelollipop@gmail.com / admin123');
     }
   };
 
@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
               <label htmlFor="admin-email" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
                 <FiMail className="h-4 w-4 text-pink-500" /> Email Address
               </label>
-              <input id="admin-email" type="email" required value={email} onChange={(e) => { setEmail(e.target.value); setError(''); }} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 text-sm transition-all" placeholder="admin@limbabykiddies.com" />
+              <input id="admin-email" type="email" required value={email} onChange={(e) => { setEmail(e.target.value); setError(''); }} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 text-sm transition-all" placeholder="adelekelollipop@gmail.com" />
             </div>
             <div>
               <label htmlFor="admin-password" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
@@ -54,7 +54,7 @@ export default function AdminLoginPage() {
               Sign In
             </motion.button>
           </form>
-          <p className="text-xs text-gray-500 text-center mt-4">Demo: admin@limbabykiddies.com / admin123</p>
+          <p className="text-xs text-gray-500 text-center mt-4">Demo: adelekelollipop@gmail.com / admin123</p>
         </motion.div>
       </motion.div>
     </main>
