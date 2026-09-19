@@ -44,6 +44,8 @@ function DocumentTitle() {
       '/contact': 'Contact Us | LittleBloom — Get in Touch',
       '/admin/login': 'Admin Login | LittleBloom',
       '/admin/dashboard': 'Admin Dashboard | LittleBloom',
+      '/admin/dashboard/orders': 'Order Management | LittleBloom Admin',
+      '/admin/dashboard/products': 'Product Management | LittleBloom Admin',
     };
     document.title = titles[pathname] || 'LittleBloom — Baby & Kids Products';
   }, [pathname]);
@@ -68,6 +70,7 @@ export default function App() {
           {/* Admin Pages (no navbar/footer) */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+          <Route path="/admin/dashboard/orders" element={<AdminDashboardPage />} />
           <Route path="/admin/dashboard/products" element={<AdminDashboardPage />} />
         </Routes>
       </CartProvider>
