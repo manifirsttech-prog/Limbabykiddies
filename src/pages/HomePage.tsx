@@ -2,20 +2,20 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiTruck, FiShield, FiStar } from 'react-icons/fi';
 import { GiHeartBeats } from 'react-icons/gi';
+import { FaChild, FaHandsHelping, FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
 import AnimatedSection from '../components/AnimatedSection';
-import AnimatedEmoji from '../components/AnimatedEmoji';
 import StaggerContainer, { StaggerItem } from '../components/StaggerContainer';
 import ProductCard from '../components/ProductCard';
 import { getFeaturedProducts, getBestSellers } from '../data/products';
 
 const categories = [
-  { name: 'Clothing', emoji: '👶', color: 'bg-pink-50 text-pink-700 border-pink-200' },
-  { name: 'Shoes', emoji: '👟', color: 'bg-blue-50 text-blue-700 border-blue-200' },
-  { name: 'Toys', emoji: '🧸', color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  { name: 'School Bags', emoji: '🎒', color: 'bg-green-50 text-green-700 border-green-200' },
-  { name: 'Bicycles', emoji: '🚲', color: 'bg-purple-50 text-purple-700 border-purple-200' },
-  { name: 'Car Seats', emoji: '🚗', color: 'bg-red-50 text-red-700 border-red-200' },
-  { name: 'Baby Accessories', emoji: '🍼', color: 'bg-orange-50 text-orange-700 border-orange-200' },
+  { name: 'Clothing', icon: FaTshirt, color: 'bg-pink-50 text-pink-700 border-pink-200' },
+  { name: 'Shoes', icon: FaShoePrints, color: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { name: 'Toys', icon: FaGamepad, color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  { name: 'School Bags', icon: FaGraduationCap, color: 'bg-green-50 text-green-700 border-green-200' },
+  { name: 'Bicycles', icon: FaBicycle, color: 'bg-purple-50 text-purple-700 border-purple-200' },
+  { name: 'Car Seats', icon: FaCar, color: 'bg-red-50 text-red-700 border-red-200' },
+  { name: 'Baby Accessories', icon: FaBaby, color: 'bg-orange-50 text-orange-700 border-orange-200' },
 ];
 
 export default function HomePage() {
@@ -26,15 +26,6 @@ export default function HomePage() {
     <main>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-pink-50 via-white to-purple-50 overflow-hidden">
-        {/* Floating Emojis Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }} transition={{ duration: 4, repeat: Infinity }} className="absolute top-20 left-10 text-4xl opacity-20">🧸</motion.div>
-          <motion.div animate={{ y: [0, 15, 0], rotate: [0, -10, 0] }} transition={{ duration: 5, repeat: Infinity }} className="absolute top-40 right-20 text-3xl opacity-20">👶</motion.div>
-          <motion.div animate={{ y: [0, -10, 0], x: [0, 10, 0] }} transition={{ duration: 6, repeat: Infinity }} className="absolute bottom-20 left-1/4 text-3xl opacity-20">🍼</motion.div>
-          <motion.div animate={{ y: [0, 20, 0], rotate: [0, 15, 0] }} transition={{ duration: 4.5, repeat: Infinity }} className="absolute bottom-40 right-1/3 text-4xl opacity-20">🎀</motion.div>
-          <motion.div animate={{ y: [0, -15, 0] }} transition={{ duration: 3.5, repeat: Infinity }} className="absolute top-1/3 left-1/2 text-2xl opacity-20">⭐</motion.div>
-        </div>
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-32 relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -44,9 +35,8 @@ export default function HomePage() {
                 transition={{ duration: 0.5 }}
                 className="inline-flex items-center gap-2 bg-pink-100 text-pink-700 px-4 py-1.5 rounded-full text-sm font-medium mb-6"
               >
-                <motion.span animate={{ rotate: [0, 20, -20, 0] }} transition={{ duration: 2, repeat: Infinity }}>✨</motion.span>
+                <FiStar className="h-4 w-4" />
                 New Arrivals for 2024
-                <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>🎉</motion.span>
               </motion.div>
 
               <motion.h1
@@ -65,8 +55,6 @@ export default function HomePage() {
                     className="absolute -bottom-2 left-0 h-1 bg-pink-300 rounded-full"
                   />
                 </span>
-                {' '}
-                <AnimatedEmoji emoji="😊" size="md" animation="wiggle" />
               </motion.h1>
 
               <motion.p
@@ -75,8 +63,8 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="mt-6 text-lg text-gray-600 leading-relaxed max-w-lg"
               >
-                Everything your little one needs, all in one place 🏡 From first outfits 👶 to first bicycles 🚲 —
-                we bring quality, safety 🛡️, and joy 🎉 to every stage of childhood.
+                Everything your little one needs, all in one place. From first outfits to first bicycles —
+                we bring quality, safety, and joy to every stage of childhood.
               </motion.p>
 
               <motion.div
@@ -90,7 +78,7 @@ export default function HomePage() {
                     to="/products"
                     className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-pink-200"
                   >
-                    Shop Now 🛍️
+                    Shop Now
                     <FiArrowRight className="h-4 w-4" />
                   </Link>
                 </motion.div>
@@ -99,7 +87,7 @@ export default function HomePage() {
                     to="/about"
                     className="inline-flex items-center gap-2 border-2 border-gray-200 hover:border-pink-300 text-gray-700 font-semibold px-8 py-3.5 rounded-xl transition-all"
                   >
-                    Our Story 💫
+                    Our Story
                   </Link>
                 </motion.div>
               </motion.div>
@@ -125,16 +113,12 @@ export default function HomePage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full blur-3xl opacity-30"></div>
               <motion.img
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
                 src="https://image.qwenlm.ai/generated-images/a6726451-73e6-4bf6-a673-34b1fa106b88/_result.png"
                 alt="Happy baby with toys"
                 className="relative rounded-3xl shadow-2xl w-full max-w-md mx-auto object-cover aspect-square border-4 border-white"
               />
-              {/* Floating elements around image */}
-              <motion.div animate={{ y: [0, -15, 0], rotate: [0, 10, 0] }} transition={{ duration: 3, repeat: Infinity }} className="absolute -top-4 -right-4 text-4xl">🎈</motion.div>
-              <motion.div animate={{ y: [0, 10, 0], rotate: [0, -10, 0] }} transition={{ duration: 2.5, repeat: Infinity }} className="absolute -bottom-4 -left-4 text-4xl">🧸</motion.div>
-              <motion.div animate={{ x: [0, 10, 0], y: [0, -5, 0] }} transition={{ duration: 3.5, repeat: Infinity }} className="absolute top-1/4 -right-8 text-3xl">⭐</motion.div>
             </motion.div>
           </div>
         </div>
@@ -144,12 +128,8 @@ export default function HomePage() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 flex items-center justify-center gap-3">
-              <AnimatedEmoji emoji="🏷️" size="md" animation="wiggle" />
-              Shop by Category
-              <AnimatedEmoji emoji="🎯" size="md" animation="pulse" />
-            </h2>
-            <p className="mt-3 text-gray-600">Find exactly what your little one needs 🎁</p>
+            <h2 className="text-3xl font-bold text-gray-900">Shop by Category</h2>
+            <p className="mt-3 text-gray-600">Find exactly what your little one needs</p>
           </AnimatedSection>
           <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4" staggerDelay={0.08}>
             {categories.map((cat) => (
@@ -159,13 +139,7 @@ export default function HomePage() {
                     to="/products"
                     className={`${cat.color} border rounded-2xl p-4 text-center hover:shadow-lg transition-all block`}
                   >
-                    <motion.span
-                      className="text-4xl block mb-2"
-                      whileHover={{ rotate: [0, -15, 15, 0] }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      {cat.emoji}
-                    </motion.span>
+                    <cat.icon className="text-3xl mx-auto mb-2" />
                     <span className="text-sm font-medium">{cat.name}</span>
                   </Link>
                 </motion.div>
@@ -180,11 +154,8 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                <AnimatedEmoji emoji="⭐" size="md" animation="pulse" />
-                Featured Products
-              </h2>
-              <p className="mt-2 text-gray-600">Handpicked favorites for your little ones 💝</p>
+              <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
+              <p className="mt-2 text-gray-600">Handpicked favorites for your little ones</p>
             </div>
             <motion.div whileHover={{ x: 5 }}>
               <Link to="/products" className="hidden sm:flex items-center gap-1 text-pink-500 font-medium hover:text-pink-600">
@@ -216,22 +187,21 @@ export default function HomePage() {
             <AnimatedSection direction="right">
               <h2 className="text-3xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 Made with <GiHeartBeats className="text-pink-500" /> Love, for the Ones You Love Most
-                <AnimatedEmoji emoji="💕" size="md" animation="pulse" />
               </h2>
               <p className="text-gray-600 leading-relaxed mb-4">
-                At LittleBloom 🌸, we believe every child deserves the best start in life. That's why we carefully
-                select every product in our collection — from the softest fabrics 🧶 to the safest materials 🛡️.
+                At LittleBloom, we believe every child deserves the best start in life. That's why we carefully
+                select every product in our collection — from the softest fabrics to the safest materials.
               </p>
               <p className="text-gray-600 leading-relaxed mb-6">
-                Whether it's their first pair of shoes 👟, their favorite toy 🧸, or the car seat 🚗 that keeps them safe,
-                we're here to make those important moments a little easier for parents 👨‍👩‍👧‍👦.
+                Whether it's their first pair of shoes, their favorite toy, or the car seat that keeps them safe,
+                we're here to make those important moments a little easier for parents.
               </p>
               <motion.div whileHover={{ x: 5 }}>
                 <Link
                   to="/about"
                   className="inline-flex items-center gap-2 text-pink-500 font-semibold hover:text-pink-600"
                 >
-                  Read Our Story 📖 <FiArrowRight className="h-4 w-4" />
+                  Read Our Story <FiArrowRight className="h-4 w-4" />
                 </Link>
               </motion.div>
             </AnimatedSection>
@@ -243,11 +213,8 @@ export default function HomePage() {
       <section className="py-16 bg-gradient-to-br from-pink-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 flex items-center justify-center gap-2">
-              Why Parents Choose Us
-              <AnimatedEmoji emoji="🏆" size="md" animation="bounce" />
-            </h2>
-            <p className="mt-3 text-gray-600">Trusted by thousands of families 🏡💕</p>
+            <h2 className="text-3xl font-bold text-gray-900">Why Parents Choose Us</h2>
+            <p className="mt-3 text-gray-600">Trusted by thousands of families</p>
           </AnimatedSection>
           <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6" staggerDelay={0.15}>
             <StaggerItem>
@@ -259,9 +226,8 @@ export default function HomePage() {
                 >
                   <FiShield className="h-7 w-7 text-pink-500" />
                 </motion.div>
-                <AnimatedEmoji emoji="🛡️" size="sm" animation="float" className="mb-2" />
                 <h3 className="font-semibold text-gray-900 mb-2">Safety First</h3>
-                <p className="text-sm text-gray-600">All products meet strict safety standards and certifications ✅</p>
+                <p className="text-sm text-gray-600">All products meet strict safety standards and certifications.</p>
               </motion.div>
             </StaggerItem>
             <StaggerItem>
@@ -273,9 +239,8 @@ export default function HomePage() {
                 >
                   <GiHeartBeats className="h-7 w-7 text-blue-500" />
                 </motion.div>
-                <AnimatedEmoji emoji="💎" size="sm" animation="float" className="mb-2" />
                 <h3 className="font-semibold text-gray-900 mb-2">Premium Quality</h3>
-                <p className="text-sm text-gray-600">We source only the finest materials for lasting comfort ✨</p>
+                <p className="text-sm text-gray-600">We source only the finest materials for lasting comfort.</p>
               </motion.div>
             </StaggerItem>
             <StaggerItem>
@@ -287,9 +252,8 @@ export default function HomePage() {
                 >
                   <FiTruck className="h-7 w-7 text-green-500" />
                 </motion.div>
-                <AnimatedEmoji emoji="🚚" size="sm" animation="float" className="mb-2" />
                 <h3 className="font-semibold text-gray-900 mb-2">Fast Delivery</h3>
-                <p className="text-sm text-gray-600">Quick and reliable shipping right to your doorstep 📦</p>
+                <p className="text-sm text-gray-600">Quick and reliable shipping right to your doorstep.</p>
               </motion.div>
             </StaggerItem>
             <StaggerItem>
@@ -301,9 +265,8 @@ export default function HomePage() {
                 >
                   <FiStar className="h-7 w-7 text-yellow-500" />
                 </motion.div>
-                <AnimatedEmoji emoji="⭐" size="sm" animation="float" className="mb-2" />
                 <h3 className="font-semibold text-gray-900 mb-2">5-Star Reviews</h3>
-                <p className="text-sm text-gray-600">Loved by parents with thousands of happy reviews 🎉</p>
+                <p className="text-sm text-gray-600">Loved by parents with thousands of happy reviews.</p>
               </motion.div>
             </StaggerItem>
           </StaggerContainer>
@@ -315,11 +278,8 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                <AnimatedEmoji emoji="🔥" size="md" animation="pulse" />
-                Best Sellers
-              </h2>
-              <p className="mt-2 text-gray-600">Most loved by families like yours 💗</p>
+              <h2 className="text-3xl font-bold text-gray-900">Best Sellers</h2>
+              <p className="mt-2 text-gray-600">Most loved by families like yours</p>
             </div>
             <motion.div whileHover={{ x: 5 }}>
               <Link to="/products" className="hidden sm:flex items-center gap-1 text-pink-500 font-medium hover:text-pink-600">
@@ -337,29 +297,20 @@ export default function HomePage() {
 
       {/* Final CTA */}
       <section className="py-20 bg-gradient-to-r from-pink-500 via-pink-600 to-purple-500 relative overflow-hidden">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.div animate={{ y: [0, -30, 0], x: [0, 20, 0] }} transition={{ duration: 6, repeat: Infinity }} className="absolute top-10 left-10 text-5xl opacity-20">🎈</motion.div>
-          <motion.div animate={{ y: [0, 20, 0], rotate: [0, 20, 0] }} transition={{ duration: 5, repeat: Infinity }} className="absolute bottom-10 right-10 text-5xl opacity-20">🧸</motion.div>
-          <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity }} className="absolute top-1/2 left-1/4 text-4xl opacity-20">⭐</motion.div>
-          <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 10, repeat: Infinity, ease: 'linear' }} className="absolute bottom-1/4 right-1/4 text-4xl opacity-20">🌟</motion.div>
-        </div>
-
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
           <AnimatedSection>
-            <AnimatedEmoji emoji="🎉" size="xl" animation="bounce" className="mb-4" />
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Give Your Little One the Best Start 🌈
+              Give Your Little One the Best Start
             </h2>
             <p className="text-pink-100 text-lg mb-8 max-w-2xl mx-auto">
-              Join thousands of parents who trust LittleBloom 💕 for quality, safe, and delightful products for their children 👶🧒
+              Join thousands of parents who trust LittleBloom for quality, safe, and delightful products for their children.
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/products"
                 className="inline-flex items-center gap-2 bg-white text-pink-500 font-semibold px-8 py-3.5 rounded-xl hover:bg-pink-50 transition-colors shadow-xl"
               >
-                Start Shopping 🛍️
+                Start Shopping
                 <FiArrowRight className="h-4 w-4" />
               </Link>
             </motion.div>

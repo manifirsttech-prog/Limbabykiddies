@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiShoppingCart, FiEye } from 'react-icons/fi';
-import { FaStar } from 'react-icons/fa';
+import { FiShoppingCart, FiEye, FiStar } from 'react-icons/fi';
+import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
 import { Product } from '../types/product';
 import { useCart } from '../context/CartContext';
 
@@ -10,8 +10,19 @@ interface ProductCardProps {
   index?: number;
 }
 
+const categoryIcons: Record<string, React.ElementType> = {
+  Clothing: FaTshirt,
+  Shoes: FaShoePrints,
+  'School Bags': FaGraduationCap,
+  Bicycles: FaBicycle,
+  'Car Seats': FaCar,
+  'Baby Accessories': FaBaby,
+  Toys: FaGamepad,
+};
+
 export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const { addToCart } = useCart();
+  const CategoryIcon = categoryIcons[product.category] || FaBaby;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -38,7 +49,6 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
             transition={{ duration: 0.4 }}
             loading="lazy"
           />
-          {/* Badge */}
           {product.bestSeller && (
             <motion.span
               initial={{ x: -50, opacity: 0 }}
@@ -46,22 +56,21 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
               transition={{ delay: 0.3 }}
               className="absolute top-3 left-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md"
             >
-              <FaStar className="text-xs" /> Bestseller
+              <FiStar className="text-xs" /> Bestseller
             </motion.span>
           )}
           {product.stock < 10 && product.stock > 0 && (
             <span className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
-              🔥 Only {product.stock} left
+              Only {product.stock} left
             </span>
           )}
           {product.stock === 0 && (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
               <span className="bg-white text-gray-900 font-bold px-4 py-2 rounded-lg text-sm">
-                ❌ Sold Out
+                Sold Out
               </span>
             </div>
           )}
-          {/* Quick View Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             whileHover={{ opacity: 1 }}
@@ -75,16 +84,8 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       </Link>
       <div className="p-4">
         <Link to={`/products/${product.slug}`}>
-          <p className="text-xs font-medium text-pink-500 uppercase tracking-wide mb-1 flex items-center gap-1">
-            <span>
-              {product.category === 'Clothing' && '👶'}
-              {product.category === 'Shoes' && '👟'}
-              {product.category === 'School Bags' && '🎒'}
-              {product.category === 'Bicycles' && '🚲'}
-              {product.category === 'Car Seats' && '🚗'}
-              {product.category === 'Baby Accessories' && '🍼'}
-              {product.category === 'Toys' && '🧸'}
-            </span>
+          <p className="text-xs font-medium text-pink-500 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+            <CategoryIcon className="h-3.5 w-3.5" />
             {product.category}
           </p>
           <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-pink-500 transition-colors">
@@ -94,11 +95,9 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         <div className="flex items-center justify-between mt-3">
           <span className="text-lg font-bold text-gray-900">${product.price.toFixed(2)}</span>
           {product.stock > 0 ? (
-            <span className="text-xs text-green-600 font-medium flex items-center gap-1">
-              ✅ In Stock
-            </span>
+            <span className="text-xs text-green-600 font-medium">In Stock</span>
           ) : (
-            <span className="text-xs text-red-500 font-medium">❌ Out of Stock</span>
+            <span className="text-xs text-red-500 font-medium">Out of Stock</span>
           )}
         </div>
         <motion.button
@@ -109,7 +108,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           className="mt-3 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 disabled:from-gray-300 disabled:to-gray-300 text-white text-sm font-medium py-2.5 rounded-xl transition-all shadow-md shadow-pink-200 disabled:shadow-none"
         >
           <FiShoppingCart className="h-4 w-4" />
-          {product.stock > 0 ? 'Add to Cart 🛒' : 'Sold Out 😢'}
+          {product.stock > 0 ? 'Add to Cart' : 'Sold Out'}
         </motion.button>
       </div>
     </motion.article>

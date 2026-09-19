@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiShoppingCart, FiMenu, FiX, FiSearch } from 'react-icons/fi';
+import { FiShoppingCart, FiMenu, FiX, FiSearch, FiHome, FiShoppingBag, FiInfo, FiPhone } from 'react-icons/fi';
 import { GiBabyBottle } from 'react-icons/gi';
 import { useCart } from '../context/CartContext';
 
@@ -13,10 +13,10 @@ export default function Navbar() {
   const isActive = (path: string) => location.pathname === path;
 
   const navLinks = [
-    { path: '/', label: 'Home', emoji: '🏠' },
-    { path: '/products', label: 'Shop', emoji: '🛍️' },
-    { path: '/about', label: 'About', emoji: '💫' },
-    { path: '/contact', label: 'Contact', emoji: '📞' },
+    { path: '/', label: 'Home', icon: FiHome },
+    { path: '/products', label: 'Shop', icon: FiShoppingBag },
+    { path: '/about', label: 'About', icon: FiInfo },
+    { path: '/contact', label: 'Contact', icon: FiPhone },
   ];
 
   return (
@@ -34,13 +34,6 @@ export default function Navbar() {
             <span className="text-xl font-bold text-gray-900">
               Little<span className="text-pink-500">Bloom</span>
             </span>
-            <motion.span
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="text-lg"
-            >
-              ✨
-            </motion.span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -53,7 +46,7 @@ export default function Navbar() {
                   isActive(link.path) ? 'text-pink-500' : 'text-gray-700 hover:text-pink-500'
                 }`}
               >
-                <span className="text-base">{link.emoji}</span>
+                <link.icon className="h-4 w-4" />
                 {link.label}
               </Link>
             ))}
@@ -113,7 +106,7 @@ export default function Navbar() {
                       isActive(link.path) ? 'text-pink-500' : 'text-gray-700 hover:text-pink-500'
                     }`}
                   >
-                    <span className="text-lg">{link.emoji}</span>
+                    <link.icon className="h-5 w-5" />
                     {link.label}
                   </Link>
                 </motion.div>

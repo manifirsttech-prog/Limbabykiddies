@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { GiBabyBottle } from 'react-icons/gi';
 import { FiMail, FiPhone, FiMapPin, FiHeart } from 'react-icons/fi';
 import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
-import AnimatedEmoji from './AnimatedEmoji';
 
 export default function Footer() {
   return (
@@ -22,10 +21,9 @@ export default function Footer() {
               <span className="text-lg font-bold text-white">
                 Little<span className="text-pink-400">Bloom</span>
               </span>
-              <AnimatedEmoji emoji="✨" size="sm" animation="pulse" />
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Everything your little one needs, all in one place. Quality products for happy children and confident parents. 💕
+              Everything your little one needs, all in one place. Quality products for happy children and confident parents.
             </p>
             <div className="flex gap-3 mt-4">
               <motion.a
@@ -65,14 +63,12 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <span>🔗</span> Quick Links
-            </h3>
+            <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors flex items-center gap-2"><span>🛍️</span> Shop All</Link></li>
-              <li><Link to="/about" className="text-sm hover:text-pink-400 transition-colors flex items-center gap-2"><span>💫</span> About Us</Link></li>
-              <li><Link to="/contact" className="text-sm hover:text-pink-400 transition-colors flex items-center gap-2"><span>📞</span> Contact</Link></li>
-              <li><Link to="/cart" className="text-sm hover:text-pink-400 transition-colors flex items-center gap-2"><span>🛒</span> My Cart</Link></li>
+              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Shop All</Link></li>
+              <li><Link to="/about" className="text-sm hover:text-pink-400 transition-colors">About Us</Link></li>
+              <li><Link to="/contact" className="text-sm hover:text-pink-400 transition-colors">Contact</Link></li>
+              <li><Link to="/cart" className="text-sm hover:text-pink-400 transition-colors">My Cart</Link></li>
             </ul>
           </motion.div>
 
@@ -83,14 +79,12 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <span>📂</span> Categories
-            </h3>
+            <h3 className="text-white font-semibold mb-4">Categories</h3>
             <ul className="space-y-2">
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors flex items-center gap-2"><span>👶</span> Clothing</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors flex items-center gap-2"><span>👟</span> Shoes</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors flex items-center gap-2"><span>🧸</span> Toys</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors flex items-center gap-2"><span>🍼</span> Baby Accessories</Link></li>
+              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Clothing</Link></li>
+              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Shoes</Link></li>
+              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Toys</Link></li>
+              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Baby Accessories</Link></li>
             </ul>
           </motion.div>
 
@@ -101,9 +95,7 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <span>📬</span> Contact Us
-            </h3>
+            <h3 className="text-white font-semibold mb-4">Contact Us</h3>
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm">
                 <FiMail className="h-4 w-4 text-pink-400" />
@@ -130,11 +122,8 @@ export default function Footer() {
         >
           <p className="text-sm text-gray-500 flex items-center justify-center gap-1">
             © {new Date().getFullYear()} LittleBloom. All rights reserved. Made with
-            <motion.span
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-            >
-              <FiHeart className="inline text-pink-400" />
+            <motion.span animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
+              <FiHeart className="inline text-pink-400 mx-1" />
             </motion.span>
             for little ones.
           </p>
