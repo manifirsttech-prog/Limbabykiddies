@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase';
-import { products as initialProducts } from '../data/products';
+import { getAllProducts, addProduct, updateProduct, deleteProduct } from '../lib/firestore';
 import { Product, ProductCategory } from '../types/product';
 import { formatPrice } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -92,11 +92,30 @@ export default function AdminDashboardPage() {
     else setActiveTab('overview');
   }, [location.pathname]);
 
-  const [productList, setProductList] = useState<Product[]>(initialProducts);
+  const [productList, setProductList] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const navigate = useNavigate();
   const { logout, currentUser } = useAuth();
+
+  // Fetch products from Firestore
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const products = await getAllProducts();
+        setProductList(products);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        alert('Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '', category: 'Clothing' as ProductCategory, price: '', description: '',
@@ -168,6 +187,7 @@ export default function AdminDashboardPage() {
 
       const productData = {
         name: formData.name,
+        slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
         category: formData.category,
         price: parseFloat(formData.price),
         description: formData.description,
@@ -177,33 +197,53 @@ export default function AdminDashboardPage() {
         colors: formData.colors ? formData.colors.split(',').map(c => c.trim()) : undefined,
         images: images.length > 0 ? images : (editingProduct?.images || ['https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=600&h=600&fit=crop']),
         video: video || editingProduct?.video,
+        featured: editingProduct?.featured || false,
+        bestSeller: editingProduct?.bestSeller || false,
       };
 
       if (editingProduct) {
+        // Update existing product in Firestore
+        await updateProduct(editingProduct.id, productData);
+        
+        // Update local state
         setProductList((prev) =>
           prev.map((p) => p.id === editingProduct.id ? { ...p, ...productData } : p)
         );
       } else {
+        // Add new product to Firestore
+        const newProductId = await addProduct(productData);
+        
+        // Update local state
         const newProduct: Product = {
-          id: Date.now().toString(),
-          slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
-          featured: false,
-          bestSeller: false,
+          id: newProductId,
           ...productData,
         };
         setProductList((prev) => [...prev, newProduct]);
       }
+      
       setShowModal(false);
+      alert(editingProduct ? 'Product updated successfully!' : 'Product added successfully!');
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Error uploading files. Please try again.');
+      alert('Error saving product. Please try again.');
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDelete = (id: string) => {
-    setProductList((prev) => prev.filter((p) => p.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) {
+      return;
+    }
+    
+    try {
+      await deleteProduct(id);
+      setProductList((prev) => prev.filter((p) => p.id !== id));
+      alert('Product deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Failed to delete product. Please try again.');
+    }
   };
 
   return (
@@ -264,7 +304,18 @@ export default function AdminDashboardPage() {
         <main className="flex-1 p-6 overflow-auto">
           {activeTab === 'overview' && <OverviewSection />}
           {activeTab === 'orders' && <OrdersSection />}
-          {activeTab === 'products' && <ProductsSection products={productList} onAdd={openAddModal} onEdit={openEditModal} onDelete={handleDelete} />}
+          {activeTab === 'products' && (
+            loading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+                  <p className="mt-4 text-gray-600">Loading products...</p>
+                </div>
+              </div>
+            ) : (
+              <ProductsSection products={productList} onAdd={openAddModal} onEdit={openEditModal} onDelete={handleDelete} />
+            )
+          )}
         </main>
       </div>
 

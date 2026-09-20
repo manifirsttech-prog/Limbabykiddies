@@ -108,6 +108,29 @@ service firebase.storage {
 
 ## 📦 Product Management with Media Upload
 
+### Setting Up Firestore Database
+
+1. **Enable Firestore** in Firebase Console:
+   - Go to **Firestore Database**
+   - Click **Create database**
+   - Choose **Start in test mode** (you can update rules later)
+   - Select your preferred location
+   - Click **Enable**
+
+2. **Firestore Security Rules** (for production):
+   ```javascript
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       // Products collection - public read, authenticated write
+       match /products/{productId} {
+         allow read: if true;
+         allow write: if request.auth != null;
+       }
+     }
+   }
+   ```
+
 ### Adding Products with Images & Videos
 1. Go to **Admin Dashboard** > **Products**
 2. Click **Add Product**
@@ -117,16 +140,18 @@ service firebase.storage {
    - Sizes (comma-separated, e.g., "S, M, L, XL")
    - Colors (comma-separated, e.g., "Red, Blue, Green")
    - Status (Active, Draft, Out of Stock)
+   - Featured (yes/no) - appears on homepage
+   - Best Seller (yes/no) - appears in best sellers section
 4. **Upload Images**:
    - Click the image upload area
    - Select one or multiple images
    - Images are uploaded to Firebase Storage
-   - Download URLs are automatically saved
+   - Download URLs are automatically saved to Firestore
 5. **Upload Video** (optional):
    - Click the video upload area
    - Select a video file (MP4, MOV, etc.)
    - Video is uploaded to Firebase Storage
-   - Download URL is automatically saved
+   - Download URL is automatically saved to Firestore
 6. Click **Add Product**
 
 ### Editing Products
@@ -134,6 +159,34 @@ service firebase.storage {
 2. Modify any field
 3. Upload new images/videos (optional - replaces existing)
 4. Click **Update**
+
+### Deleting Products
+1. Click the delete icon (trash) next to a product
+2. Confirm deletion
+3. Product is removed from Firestore
+
+### Firestore Data Structure
+
+Products are stored in the `products` collection with the following structure:
+
+```javascript
+{
+  id: "auto-generated",
+  name: "Product Name",
+  slug: "product-name",
+  category: "Clothing", // or Shoes, Toys, etc.
+  price: 12500,
+  description: "Product description...",
+  images: ["url1", "url2"],
+  video: "video-url", // optional
+  sizes: ["S", "M", "L"], // optional
+  colors: ["Red", "Blue"], // optional
+  stock: 45,
+  status: "active", // or "draft", "out-of-stock"
+  featured: true, // shows on homepage
+  bestSeller: true // shows in best sellers
+}
+```
 
 ## 📁 Project Structure
 

@@ -1,11 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiSearch } from 'react-icons/fi';
 import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad, FaTh } from 'react-icons/fa';
 import ProductCard from '../components/ProductCard';
 import AnimatedSection from '../components/AnimatedSection';
-import { products } from '../data/products';
-import { ProductCategory } from '../types/product';
+import { getAllProducts } from '../lib/firestore';
+import { Product, ProductCategory } from '../types/product';
 
 const categories: (ProductCategory | 'All')[] = [
   'All', 'Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Car Seats', 'Baby Accessories', 'Toys',
@@ -23,8 +23,25 @@ const categoryIcons: Record<string, React.ElementType> = {
 };
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'All'>('All');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const allProducts = await getAllProducts();
+        setProducts(allProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     let result = products;
@@ -37,6 +54,17 @@ export default function ProductsPage() {
     }
     return result;
   }, [selectedCategory, searchQuery]);
+
+  if (loading) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

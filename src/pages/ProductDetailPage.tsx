@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiShoppingCart, FiTruck, FiShield, FiRotateCw, FiMinus, FiPlus, FiChevronRight, FiCheck } from 'react-icons/fi';
 import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
-import { getProductBySlug } from '../data/products';
+import { getProductBySlug } from '../lib/firestore';
 import { useCart } from '../context/CartContext';
 import AnimatedSection from '../components/AnimatedSection';
 import { formatPrice } from '../lib/utils';
+import { Product } from '../types/product';
 
 const categoryIcons: Record<string, React.ElementType> = {
   Clothing: FaTshirt, Shoes: FaShoePrints, 'School Bags': FaGraduationCap,
@@ -15,12 +16,41 @@ const categoryIcons: Record<string, React.ElementType> = {
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const product = getProductBySlug(slug || '');
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [addedToCart, setAddedToCart] = useState(false);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!slug) return;
+      
+      try {
+        const productData = await getProductBySlug(slug);
+        setProduct(productData);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProduct();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading product...</p>
+        </div>
+      </main>
+    );
+  }
 
   if (!product) {
     return (

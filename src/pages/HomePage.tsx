@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiTruck, FiShield, FiStar } from 'react-icons/fi';
@@ -6,7 +7,8 @@ import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGa
 import AnimatedSection from '../components/AnimatedSection';
 import StaggerContainer, { StaggerItem } from '../components/StaggerContainer';
 import ProductCard from '../components/ProductCard';
-import { getFeaturedProducts, getBestSellers } from '../data/products';
+import { getFeaturedProducts, getBestSellers } from '../lib/firestore';
+import { Product } from '../types/product';
 
 const categories = [
   { name: 'Clothing', icon: FaTshirt, color: 'bg-pink-50 text-pink-700 border-pink-200' },
@@ -19,8 +21,39 @@ const categories = [
 ];
 
 export default function HomePage() {
-  const featured = getFeaturedProducts();
-  const bestSellers = getBestSellers();
+  const [featured, setFeatured] = useState<Product[]>([]);
+  const [bestSellers, setBestSellers] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const [featuredProducts, bestSellerProducts] = await Promise.all([
+          getFeaturedProducts(),
+          getBestSellers()
+        ]);
+        setFeatured(featuredProducts);
+        setBestSellers(bestSellerProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main>
