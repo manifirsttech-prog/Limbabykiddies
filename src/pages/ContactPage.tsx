@@ -47,7 +47,7 @@ export default function ContactPage() {
                     <div>
                       <h3 className="font-medium text-gray-900">Phone</h3>
                       <p className="text-gray-600">+2349048298906</p>
-                      <p className="text-sm text-gray-500">Mon - Sat, 9am - 6pm</p>
+                      <p className="text-sm text-gray-500">Always available</p>
                     </div>
                   </motion.div>
                   <motion.div whileHover={{ x: 5 }} className="flex items-start gap-4 p-4 rounded-xl hover:bg-green-50 transition-colors">
@@ -57,7 +57,7 @@ export default function ContactPage() {
                     <div>
                       <h3 className="font-medium text-gray-900">WhatsApp</h3>
                       <p className="text-gray-600">+2349048298906</p>
-                      <p className="text-sm text-gray-500">Quick responses during business hours</p>
+                      <p className="text-sm text-gray-500">Quick responses</p>
                     </div>
                   </motion.div>
                   <motion.div whileHover={{ x: 5 }} className="flex items-start gap-4 p-4 rounded-xl hover:bg-purple-50 transition-colors">
