@@ -40,7 +40,9 @@ export default function Footer() {
               <motion.a
                 whileHover={{ scale: 1.2, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
-                href="#"
+                href="https://www.instagram.com/Funmilolanahouli"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-pink-400 hover:bg-pink-900/30 transition-colors"
                 aria-label="Instagram"
               >

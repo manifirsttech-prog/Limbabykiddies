@@ -77,7 +77,7 @@ export default function ContactPage() {
                     <motion.a whileHover={{ scale: 1.2, rotate: 10 }} whileTap={{ scale: 0.9 }} href="https://wa.me/2349048298906" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 hover:bg-green-100 hover:text-green-600 transition-colors" aria-label="WhatsApp">
                       <FaWhatsapp className="h-5 w-5" />
                     </motion.a>
-                    <motion.a whileHover={{ scale: 1.2, rotate: 10 }} whileTap={{ scale: 0.9 }} href="#" className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 hover:bg-pink-100 hover:text-pink-600 transition-colors" aria-label="Instagram">
+                    <motion.a whileHover={{ scale: 1.2, rotate: 10 }} whileTap={{ scale: 0.9 }} href="https://www.instagram.com/Funmilolanahouli" target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-600 hover:bg-pink-100 hover:text-pink-600 transition-colors" aria-label="Instagram">
                       <FaInstagram className="h-5 w-5" />
                     </motion.a>
                   </div>
