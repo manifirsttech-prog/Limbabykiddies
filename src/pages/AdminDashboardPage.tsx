@@ -659,35 +659,93 @@ function OrdersSection({ orders, onRefresh }: { orders: Order[]; onRefresh: () =
             <p className="text-gray-500">Orders will appear here when customers place orders through your store via Paystack or Cash on Delivery.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Order Ref / ID</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Customer</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Date</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Payment</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {orders.map((order: Order) => (
-                  <motion.tr key={order.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ backgroundColor: '#fafafa' }}>
-                    <td className="px-4 py-3">
-                      <span className="text-xs font-mono font-medium text-gray-900">{order.paymentReference || order.id.slice(0, 8)}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{order.customerName}</p>
-                        <p className="text-xs text-gray-500">{order.customerPhone || order.customerEmail}</p>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-gray-600 hidden md:table-cell">{order.date}</td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${order.paymentMethod === 'Paystack' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                        {order.paymentMethod || 'Paystack'}
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-100">
+                  <tr>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Order Ref / ID</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Customer</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Payment</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {orders.map((order: Order) => (
+                    <motion.tr key={order.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ backgroundColor: '#fafafa' }}>
+                      <td className="px-4 py-3">
+                        <span className="text-xs font-mono font-medium text-gray-900">{order.paymentReference || order.id.slice(0, 8)}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{order.customerName}</p>
+                          <p className="text-xs text-gray-500">{order.customerPhone || order.customerEmail}</p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-600">{order.date}</td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${order.paymentMethod === 'Paystack' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                          {order.paymentMethod || 'Paystack'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm font-semibold text-gray-900">{formatPrice(order.total)}</td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium border ${getStatusColor(order.status)}`}>
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-2">
+                          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedOrder(order)} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-pink-600 hover:bg-pink-50 rounded-lg transition-colors">
+                            <Eye className="h-3.5 w-3.5" /> View
+                          </motion.button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-gray-100">
+              {orders.map((order: Order, index: number) => (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => setSelectedOrder(order)}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <p className="font-medium text-gray-900 text-sm">{order.customerName}</p>
+                      <p className="text-xs text-gray-500 font-mono">{order.paymentReference || order.id.slice(0, 8)}</p>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium border ${getStatusColor(order.status)}`}>
+                      {order.status}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs text-gray-600 mb-2">
+                    <span>{order.date}</span>
+                    <span className={`px-2 py-0.5 rounded-full font-medium ${order.paymentMethod === 'Paystack' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {order.paymentMethod || 'Paystack'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-500">{order.customerPhone || order.customerEmail}</span>
+                    <span className="text-sm font-bold text-pink-600">{formatPrice(order.total)}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </>
+        )
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatPrice(order.total)}</td>
@@ -811,15 +869,16 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:shadow-lg transition-all">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Product</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Category</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Category</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Price</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Stock</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden lg:table-cell">Status</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Stock</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
                 <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
             </thead>
@@ -829,13 +888,13 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <img src={product.images[0]} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
-                      <span className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{product.name}</span>
+                      <span className="text-sm font-medium text-gray-900">{product.name}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600 hidden sm:table-cell">{product.category}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{product.category}</td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatPrice(product.price)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">{product.stock}</td>
-                  <td className="px-4 py-3 hidden lg:table-cell">
+                  <td className="px-4 py-3 text-sm text-gray-600">{product.stock}</td>
+                  <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${product.status === 'active' ? 'bg-green-100 text-green-700' : product.status === 'draft' ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-700'}`}>{product.status}</span>
                   </td>
                   <td className="px-4 py-3">
@@ -855,6 +914,45 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y divide-gray-100">
+          {products.map((product, index) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="p-4"
+            >
+              <div className="flex gap-3 mb-3">
+                <img src={product.images[0]} alt={product.name} className="w-16 h-16 rounded-lg object-cover" />
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-gray-900 text-sm mb-1 truncate">{product.name}</h4>
+                  <p className="text-xs text-gray-500 mb-1">{product.category}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-pink-600">{formatPrice(product.price)}</span>
+                    <span className="text-xs text-gray-500">Stock: {product.stock}</span>
+                  </div>
+                </div>
+                <span className={`text-xs px-2 py-1 rounded-full font-medium h-fit ${product.status === 'active' ? 'bg-green-100 text-green-700' : product.status === 'draft' ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-700'}`}>
+                  {product.status}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedProduct(product)} className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium text-pink-600 bg-pink-50 rounded-lg transition-colors">
+                  <Eye className="h-3.5 w-3.5" /> View
+                </motion.button>
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onEdit(product)} className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg transition-colors">
+                  <Edit className="h-3.5 w-3.5" /> Edit
+                </motion.button>
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onDelete(product.id)} className="px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg transition-colors">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </motion.div>
 
