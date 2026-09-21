@@ -4,12 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Baby, LayoutDashboard, Package, LogOut, ShoppingCart,
   PackageCheck, AlertTriangle, TrendingUp, Plus, Edit, Trash2, X,
-  BarChart3, ExternalLink, Eye, MapPin, Phone, Mail, Upload, Image as ImageIcon, Video
+  BarChart3, ExternalLink, Eye, MapPin, Phone, Mail, Upload, Image as ImageIcon, Video, MessageSquare
 } from 'lucide-react';
 import { uploadImage, uploadVideo } from '../lib/cloudinary';
-import { getAllProducts, addProduct, updateProduct, deleteProduct, getAllOrders, updateOrderStatus, deleteOrder } from '../lib/firestore';
+import { getAllProducts, addProduct, updateProduct, deleteProduct, getAllOrders, updateOrderStatus, getAllContactMessages, updateMessageStatus, deleteContactMessage } from '../lib/firestore';
 import { Product, ProductCategory } from '../types/product';
 import { Order } from '../types/order';
+import { ContactMessage } from '../types/contact';
 import { formatPrice } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,37 +20,44 @@ import SEO from '../components/SEO/SEO';
 
 export default function AdminDashboardPage() {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders'>(
-    location.pathname.includes('/products') ? 'products' : location.pathname.includes('/orders') ? 'orders' : 'overview'
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'messages'>(
+    location.pathname.includes('/products') ? 'products' : location.pathname.includes('/orders') ? 'orders' : location.pathname.includes('/messages') ? 'messages' : 'overview'
   );
 
   useEffect(() => {
     if (location.pathname.includes('/products')) setActiveTab('products');
     else if (location.pathname.includes('/orders')) setActiveTab('orders');
+    else if (location.pathname.includes('/messages')) setActiveTab('messages');
     else setActiveTab('overview');
   }, [location.pathname]);
 
   const [productList, setProductList] = useState<Product[]>([]);
   const [orderList, setOrderList] = useState<Order[]>([]);
+  const [messageList, setMessageList] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const navigate = useNavigate();
   const { logout, currentUser } = useAuth();
 
-  // Fetch products and orders from Firestore
+  // Fetch products, orders, and messages from Firestore
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const [products, orders] = await Promise.all([
+      const [products, orders, messages] = await Promise.all([
         getAllProducts(),
         getAllOrders().catch((err) => {
           console.error('Error fetching orders:', err);
           return [];
         }),
+        getAllContactMessages().catch((err) => {
+          console.error('Error fetching messages:', err);
+          return [];
+        }),
       ]);
       setProductList(products);
       setOrderList(orders);
+      setMessageList(messages);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -290,6 +298,17 @@ export default function AdminDashboardPage() {
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${activeTab === 'products' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'}`}>
             <Package className="h-4 w-4" /> Products
           </Link>
+          <Link 
+            to="/admin/dashboard/messages" 
+            onClick={() => setSidebarOpen(false)}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${activeTab === 'messages' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+            <MessageSquare className="h-4 w-4" /> Messages
+            {messageList.filter(m => m.status === 'unread').length > 0 && (
+              <span className="ml-auto bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {messageList.filter(m => m.status === 'unread').length}
+              </span>
+            )}
+          </Link>
         </nav>
         <div className="p-4 border-t border-gray-100 space-y-1">
           <Link 
@@ -320,7 +339,7 @@ export default function AdminDashboardPage() {
               <LayoutDashboard className="h-6 w-6" />
             </button>
             <h1 className="text-base sm:text-lg font-bold text-gray-900">
-              {activeTab === 'overview' ? 'Dashboard' : activeTab === 'orders' ? 'Orders' : 'Products'}
+              {activeTab === 'overview' ? 'Dashboard' : activeTab === 'orders' ? 'Orders' : activeTab === 'messages' ? 'Messages' : 'Products'}
             </h1>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
@@ -340,6 +359,7 @@ export default function AdminDashboardPage() {
         <main className="flex-1 p-4 sm:p-6 overflow-auto">
           {activeTab === 'overview' && <OverviewSection products={productList} orders={orderList} />}
           {activeTab === 'orders' && <OrdersSection orders={orderList} onRefresh={loadDashboardData} />}
+          {activeTab === 'messages' && <MessagesSection messages={messageList} onRefresh={loadDashboardData} />}
           {activeTab === 'products' && (
             loading ? (
               <div className="flex items-center justify-center h-64">
@@ -947,6 +967,168 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
                 <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedProduct(null)} className="flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
                   Close
                 </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+
+function MessagesSection({ messages, onRefresh }: { messages: ContactMessage[]; onRefresh: () => void }) {
+  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [filter, setFilter] = useState<'all' | 'unread' | 'read' | 'replied'>('all');
+
+  const filteredMessages = filter === 'all' ? messages : messages.filter(m => m.status === filter);
+
+  const handleMarkAsRead = async (messageId: string) => {
+    try {
+      await updateMessageStatus(messageId, 'read');
+      onRefresh();
+    } catch (error) {
+      console.error('Error marking message as read:', error);
+    }
+  };
+
+  const handleMarkAsReplied = async (messageId: string) => {
+    try {
+      await updateMessageStatus(messageId, 'replied');
+      onRefresh();
+    } catch (error) {
+      console.error('Error marking message as replied:', error);
+    }
+  };
+
+  const handleDelete = async (messageId: string) => {
+    if (!window.confirm('Are you sure you want to delete this message?')) return;
+    try {
+      await deleteContactMessage(messageId);
+      setSelectedMessage(null);
+      onRefresh();
+    } catch (error) {
+      console.error('Error deleting message:', error);
+    }
+  };
+
+  const unreadCount = messages.filter(m => m.status === 'unread').length;
+
+  return (
+    <div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div>
+          <p className="text-sm text-gray-500">
+            {filteredMessages.length} message{filteredMessages.length !== 1 ? 's' : ''}
+            {unreadCount > 0 && ` (${unreadCount} unread)`}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => setFilter('all')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === 'all' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>All</button>
+          <button onClick={() => setFilter('unread')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === 'unread' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>Unread</button>
+          <button onClick={() => setFilter('read')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === 'read' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>Read</button>
+          <button onClick={() => setFilter('replied')} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === 'replied' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>Replied</button>
+        </div>
+      </motion.div>
+
+      {filteredMessages.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-2xl border-2 border-gray-100">
+          <MessageSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-500">No messages found</p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {filteredMessages.map((message) => (
+            <motion.div key={message.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} whileHover={{ scale: 1.01 }} className={`bg-white rounded-xl border-2 p-4 cursor-pointer transition-all ${message.status === 'unread' ? 'border-pink-200 bg-pink-50/50' : 'border-gray-100'}`} onClick={() => {
+              setSelectedMessage(message);
+              if (message.status === 'unread') handleMarkAsRead(message.id);
+            }}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-gray-900 truncate">{message.name}</h3>
+                    {message.status === 'unread' && (
+                      <span className="bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full">New</span>
+                    )}
+                    {message.status === 'replied' && (
+                      <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">Replied</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2 font-medium">{message.subject}</p>
+                  <p className="text-sm text-gray-500 line-clamp-2">{message.message}</p>
+                  <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                    <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {message.email}</span>
+                    <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {message.whatsapp}</span>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-400">
+                  {new Date(message.date).toLocaleDateString()}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Message Detail Modal */}
+      <AnimatePresence>
+        {selectedMessage && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedMessage(null)}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-auto">
+              <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-pink-500" /> Message Details
+                </h2>
+                <button onClick={() => setSelectedMessage(null)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-1">{selectedMessage.name}</h3>
+                    <p className="text-sm text-gray-500">{new Date(selectedMessage.date).toLocaleString()}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${selectedMessage.status === 'unread' ? 'bg-pink-100 text-pink-700' : selectedMessage.status === 'replied' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                    {selectedMessage.status}
+                  </span>
+                </div>
+
+                <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-700">{selectedMessage.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Phone className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-700">{selectedMessage.whatsapp}</span>
+                    <a href={`https://wa.me/${selectedMessage.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="ml-auto bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-green-600 transition-colors flex items-center gap-1">
+                      Chat on WhatsApp
+                    </a>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Subject</h4>
+                  <p className="text-gray-700">{selectedMessage.subject}</p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Message</h4>
+                  <p className="text-gray-700 whitespace-pre-wrap">{selectedMessage.message}</p>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  {selectedMessage.status !== 'replied' && (
+                    <button onClick={() => handleMarkAsReplied(selectedMessage.id)} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl text-sm font-medium transition-all">
+                      Mark as Replied
+                    </button>
+                  )}
+                  <button onClick={() => handleDelete(selectedMessage.id)} className="px-4 py-2.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+                    <Trash2 className="h-4 w-4" /> Delete
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

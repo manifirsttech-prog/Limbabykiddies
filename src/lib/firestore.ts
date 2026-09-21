@@ -324,3 +324,70 @@ export const reduceMultipleProductsStock = async (items: Array<{ productId: stri
   }
 };
 
+
+// --- CONTACT MESSAGE FUNCTIONS ---
+
+import { ContactMessage } from '../types/contact';
+
+const CONTACT_MESSAGES_COLLECTION = 'contactMessages';
+
+// Create new contact message
+export const createContactMessage = async (messageData: Omit<ContactMessage, 'id'>): Promise<string> => {
+  try {
+    const cleanMessage = removeUndefined(messageData);
+    const docRef = await addDoc(collection(db, CONTACT_MESSAGES_COLLECTION), {
+      ...cleanMessage,
+      createdAt: new Date().toISOString(),
+      status: 'unread'
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error('Error creating contact message:', error);
+    throw error;
+  }
+};
+
+// Fetch all contact messages
+export const getAllContactMessages = async (): Promise<ContactMessage[]> => {
+  try {
+    const querySnapshot = await getDocs(collection(db, CONTACT_MESSAGES_COLLECTION));
+    const messages: ContactMessage[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      messages.push({
+        id: doc.id,
+        ...doc.data()
+      } as ContactMessage);
+    });
+
+    // Sort by newest date first
+    messages.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
+    
+    return messages;
+  } catch (error) {
+    console.error('Error fetching contact messages:', error);
+    throw error;
+  }
+};
+
+// Update message status (mark as read/replied)
+export const updateMessageStatus = async (messageId: string, status: ContactMessage['status']): Promise<void> => {
+  try {
+    const messageRef = doc(db, CONTACT_MESSAGES_COLLECTION, messageId);
+    await updateDoc(messageRef, { status });
+  } catch (error) {
+    console.error('Error updating message status:', error);
+    throw error;
+  }
+};
+
+// Delete contact message
+export const deleteContactMessage = async (messageId: string): Promise<void> => {
+  try {
+    const messageRef = doc(db, CONTACT_MESSAGES_COLLECTION, messageId);
+    await deleteDoc(messageRef);
+  } catch (error) {
+    console.error('Error deleting contact message:', error);
+    throw error;
+  }
+};

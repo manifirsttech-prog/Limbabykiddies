@@ -55,6 +55,7 @@ export default function App() {
             <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboardPage /></ProtectedRoute>} />
             <Route path="/admin/dashboard/orders" element={<ProtectedRoute><AdminDashboardPage /></ProtectedRoute>} />
             <Route path="/admin/dashboard/products" element={<ProtectedRoute><AdminDashboardPage /></ProtectedRoute>} />
+            <Route path="/admin/dashboard/messages" element={<ProtectedRoute><AdminDashboardPage /></ProtectedRoute>} />
           </Routes>
         </CartProvider>
       </AuthProvider>

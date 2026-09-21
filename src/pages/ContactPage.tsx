@@ -4,14 +4,35 @@ import { FiMail, FiPhone, FiMapPin, FiSend } from 'react-icons/fi';
 import { FaInstagram, FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
 import AnimatedSection from '../components/AnimatedSection';
 import SEO from '../components/SEO/SEO';
+import { createContactMessage } from '../lib/firestore';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', whatsapp: '', subject: '', message: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+
+    try {
+      await createContactMessage({
+        name: form.name,
+        email: form.email,
+        whatsapp: form.whatsapp,
+        subject: form.subject,
+        message: form.message,
+        date: new Date().toISOString(),
+        status: 'unread'
+      });
+      
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      alert('Failed to send message. Please try again or contact us directly via WhatsApp.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -114,6 +135,10 @@ export default function ContactPage() {
                       <input id="email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 text-sm transition-all" placeholder="your@email.com" />
                     </div>
                     <div>
+                      <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
+                      <input id="whatsapp" type="tel" required value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 text-sm transition-all" placeholder="+234..." />
+                    </div>
+                    <div>
                       <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
                       <input id="subject" type="text" required value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 text-sm transition-all" placeholder="How can we help?" />
                     </div>
@@ -121,8 +146,17 @@ export default function ContactPage() {
                       <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
                       <textarea id="message" required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 text-sm resize-none transition-all" placeholder="Tell us more..." />
                     </div>
-                    <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-pink-200">
-                      <FiSend className="h-4 w-4" /> Send Message
+                    <motion.button type="submit" disabled={submitting} whileHover={{ scale: submitting ? 1 : 1.02 }} whileTap={{ scale: submitting ? 1 : 0.98 }} className={`w-full flex items-center justify-center gap-2 ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700'} text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-pink-200`}>
+                      {submitting ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <FiSend className="h-4 w-4" /> Send Message
+                        </>
+                      )}
                     </motion.button>
                   </motion.form>
                 )}
