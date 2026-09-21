@@ -38,7 +38,7 @@ export default function AboutPage() {
             </AnimatedSection>
             <AnimatedSection direction="right">
               <h2 className="text-3xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                Built for Parent, Made for Children
+                Built for Parents, Made for Children <FiHeart className="text-pink-500" />
               </h2>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Limbaby Kiddies was created to make shopping for little ones easier, safer, and more enjoyable for parents.
