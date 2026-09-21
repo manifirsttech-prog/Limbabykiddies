@@ -682,6 +682,8 @@ function OrdersSection() {
 }
 
 function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Product[]; onAdd: () => void; onEdit: (p: Product) => void; onDelete: (id: string) => void; }) {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
   return (
     <div>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
@@ -721,6 +723,9 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
+                      <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedProduct(product)} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-pink-600 hover:bg-pink-50 rounded-lg transition-colors">
+                        <Eye className="h-3.5 w-3.5" /> View
+                      </motion.button>
                       <motion.button whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }} onClick={() => onEdit(product)} className="p-1.5 text-gray-400 hover:text-blue-500 transition-colors" aria-label="Edit product">
                         <Edit className="h-4 w-4" />
                       </motion.button>
@@ -735,6 +740,121 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
           </table>
         </div>
       </motion.div>
+
+      {/* Product Detail Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedProduct(null)}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl">
+              <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h2>
+                  <p className="text-sm text-gray-500 mt-1">Product ID: {selectedProduct.id}</p>
+                </div>
+                <motion.button whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedProduct(null)} className="text-gray-400 hover:text-gray-600">
+                  <X className="h-5 w-5" />
+                </motion.button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {/* Product Images */}
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4 text-pink-500" /> Product Images
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {selectedProduct.images.map((image, index) => (
+                      <motion.div key={index} whileHover={{ scale: 1.05 }} className="relative aspect-square rounded-xl overflow-hidden border-2 border-gray-100">
+                        <img src={image} alt={`${selectedProduct.name} - Image ${index + 1}`} className="w-full h-full object-cover" />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Product Video */}
+                {selectedProduct.video && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <Video className="h-4 w-4 text-pink-500" /> Product Video
+                    </h3>
+                    <div className="rounded-xl overflow-hidden border-2 border-gray-100">
+                      <video src={selectedProduct.video} controls className="w-full">
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  </div>
+                )}
+
+                {/* Product Details */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <Package className="h-4 w-4 text-pink-500" /> Product Information
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <p className="text-gray-700"><span className="font-medium">Category:</span> {selectedProduct.category}</p>
+                      <p className="text-gray-700"><span className="font-medium">Price:</span> <span className="text-pink-500 font-bold">{formatPrice(selectedProduct.price)}</span></p>
+                      <p className="text-gray-700"><span className="font-medium">Stock:</span> {selectedProduct.stock} units</p>
+                      <p className="text-gray-700"><span className="font-medium">Status:</span> <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${selectedProduct.status === 'active' ? 'bg-green-100 text-green-700' : selectedProduct.status === 'draft' ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-700'}`}>{selectedProduct.status}</span></p>
+                      <p className="text-gray-700"><span className="font-medium">Slug:</span> <code className="bg-gray-100 px-2 py-0.5 rounded text-xs">{selectedProduct.slug}</code></p>
+                      {selectedProduct.featured && <p className="text-gray-700"><span className="font-medium">Featured:</span> <span className="text-yellow-600">⭐ Yes</span></p>}
+                      {selectedProduct.bestSeller && <p className="text-gray-700"><span className="font-medium">Best Seller:</span> <span className="text-yellow-600">🏆 Yes</span></p>}
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <Package className="h-4 w-4 text-pink-500" /> Options
+                    </h3>
+                    <div className="space-y-3 text-sm">
+                      {selectedProduct.sizes && selectedProduct.sizes.length > 0 && (
+                        <div>
+                          <p className="font-medium text-gray-700 mb-2">Sizes:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedProduct.sizes.map((size, index) => (
+                              <span key={index} className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-xs font-medium">{size}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {selectedProduct.colors && selectedProduct.colors.length > 0 && (
+                        <div>
+                          <p className="font-medium text-gray-700 mb-2">Colors:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedProduct.colors.map((color, index) => (
+                              <span key={index} className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-xs font-medium">{color}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {!selectedProduct.sizes?.length && !selectedProduct.colors?.length && (
+                        <p className="text-gray-500 italic">No size or color options</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Product Description */}
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Package className="h-4 w-4 text-pink-500" /> Description
+                  </h3>
+                  <p className="text-sm text-gray-700 leading-relaxed">{selectedProduct.description}</p>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-gray-100 flex gap-3">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => { setSelectedProduct(null); onEdit(selectedProduct); }} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+                  <Edit className="h-4 w-4" /> Edit Product
+                </motion.button>
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedProduct(null)} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
+                  Close
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
