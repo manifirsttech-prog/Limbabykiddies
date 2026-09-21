@@ -33,11 +33,21 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'All'>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Read category from URL on mount
+  // Read category from URL on mount and when URL changes
   useEffect(() => {
     const categoryParam = searchParams.get('category');
-    if (categoryParam && categories.includes(categoryParam as any)) {
-      setSelectedCategory(categoryParam as ProductCategory | 'All');
+    console.log('URL category param:', categoryParam);
+    
+    if (categoryParam) {
+      // Check if it's a valid category
+      const validCategory = categories.find(cat => cat === categoryParam);
+      if (validCategory) {
+        console.log('Setting category to:', validCategory);
+        setSelectedCategory(validCategory as ProductCategory);
+      }
+    } else {
+      // No category in URL, show all
+      setSelectedCategory('All');
     }
   }, [searchParams]);
 
@@ -46,6 +56,14 @@ export default function ProductsPage() {
       try {
         const allProducts = await getAllProducts();
         setProducts(allProducts);
+        
+        // 🔍 DEBUG: Log what categories actually exist in your Firestore
+        const uniqueCategories = [...new Set(allProducts.map(p => p.category))];
+        console.log('🔍 CATEGORIES IN FIRESTORE:', uniqueCategories);
+        console.log('🔍 TOTAL PRODUCTS:', allProducts.length);
+        allProducts.forEach(p => {
+          console.log(`  - ${p.name}: category="${p.category}"`);
+        });
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
