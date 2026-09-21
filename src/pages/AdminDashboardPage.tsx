@@ -661,8 +661,8 @@ function OrdersSection({ orders, onRefresh }: { orders: Order[]; onRefresh: () =
         ) : (
           <>
             {/* Desktop Table View */}
-            <div className="hidden sm:block overflow-x-auto">
-              <table className="w-full">
+            <div className="hidden sm:block overflow-x-auto bg-white">
+              <table className="w-full min-w-full">
                 <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
                     <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Order Ref / ID</th>
@@ -712,7 +712,7 @@ function OrdersSection({ orders, onRefresh }: { orders: Order[]; onRefresh: () =
             </div>
 
             {/* Mobile Card View */}
-            <div className="sm:hidden divide-y divide-gray-100">
+            <div className="block sm:hidden divide-y divide-gray-100 bg-white">
               {orders.map((order: Order, index: number) => (
                 <motion.div
                   key={order.id}
@@ -870,8 +870,8 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:shadow-lg transition-all">
         {/* Desktop Table View */}
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full">
+        <div className="hidden sm:block overflow-x-auto bg-white">
+          <table className="w-full min-w-full">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Product</th>
@@ -917,7 +917,7 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
         </div>
 
         {/* Mobile Card View */}
-        <div className="sm:hidden divide-y divide-gray-100">
+        <div className="block sm:hidden divide-y divide-gray-100 bg-white">
           {products.map((product, index) => (
             <motion.div
               key={product.id}
