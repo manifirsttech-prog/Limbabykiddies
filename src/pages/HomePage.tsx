@@ -232,7 +232,7 @@ export default function HomePage() {
               <StaggerItem key={cat.name}>
                 <motion.div whileHover={{ scale: 1.08, y: -5 }} whileTap={{ scale: 0.95 }}>
                   <Link
-                    to="/products"
+                    to={`/products?category=${encodeURIComponent(cat.name)}`}
                     className={`${cat.color} border rounded-2xl p-4 text-center hover:shadow-lg transition-all block`}
                   >
                     <cat.icon className="text-3xl mx-auto mb-2" />

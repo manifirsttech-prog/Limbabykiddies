@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiSearch } from 'react-icons/fi';
 import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad, FaTh } from 'react-icons/fa';
@@ -26,10 +27,19 @@ const categoryIcons: Record<string, React.ElementType> = {
 import SEO from '../components/SEO/SEO';
 
 export default function ProductsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'All'>('All');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Read category from URL on mount
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam && categories.includes(categoryParam as any)) {
+      setSelectedCategory(categoryParam as ProductCategory | 'All');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -135,7 +145,10 @@ export default function ProductsPage() {
                 transition={{ delay: i * 0.05 }}
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  setSearchParams(cat === 'All' ? {} : { category: cat });
+                }}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
                   selectedCategory === cat
                     ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-md shadow-pink-200'
