@@ -11,7 +11,7 @@ import { Product } from '../types/product';
 
 const categoryIcons: Record<string, React.ElementType> = {
   Clothing: FaTshirt, Shoes: FaShoePrints, 'School Bags': FaGraduationCap,
-  Bicycles: FaBicycle, 'Baby Accessories': FaBaby, Toys: FaGamepad,
+  Bicycles: FaBicycle, 'Others': FaBaby, Toys: FaGamepad,
 };
 
 export default function ProductDetailPage() {

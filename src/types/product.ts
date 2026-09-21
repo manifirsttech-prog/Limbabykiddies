@@ -20,7 +20,7 @@ export type ProductCategory =
   | 'Shoes'
   | 'School Bags'
   | 'Bicycles'
-  | 'Baby Accessories'
+  | 'Others'
   | 'Toys';
 
 export interface CartItem {

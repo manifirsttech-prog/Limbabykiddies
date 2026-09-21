@@ -16,7 +16,7 @@ const categoryIcons: Record<string, React.ElementType> = {
   Shoes: FaShoePrints,
   'School Bags': FaGraduationCap,
   Bicycles: FaBicycle,
-  'Baby Accessories': FaBaby,
+  'Others': FaBaby,
   Toys: FaGamepad,
 };
 

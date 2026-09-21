@@ -4,10 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Baby, LayoutDashboard, Package, LogOut, ShoppingCart,
   PackageCheck, AlertTriangle, TrendingUp, Plus, Edit, Trash2, X,
-  BarChart3, ExternalLink, Eye, MapPin, Phone, Mail, Upload, Image as ImageIcon, Video
+  BarChart3, ExternalLink, Eye, MapPin, Phone, Mail, Upload, Image as ImageIcon, Video, Database
 } from 'lucide-react';
 import { uploadImage, uploadVideo } from '../lib/cloudinary';
 import { getAllProducts, addProduct, updateProduct, deleteProduct } from '../lib/firestore';
+import { seedProducts } from '../lib/seedProducts';
 import { Product, ProductCategory } from '../types/product';
 import { formatPrice } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -77,7 +78,7 @@ const mockOrders: Order[] = [
   },
 ];
 
-const categories: ProductCategory[] = ['Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Baby Accessories', 'Toys'];
+const categories: ProductCategory[] = ['Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Others', 'Toys'];
 
 export default function AdminDashboardPage() {
   const location = useLocation();
@@ -478,6 +479,8 @@ export default function AdminDashboardPage() {
 }
 
 function OverviewSection() {
+  const [seeding, setSeeding] = useState(false);
+  
   const stats = [
     { label: 'Total Revenue', value: '320,000', icon: '₦', color: 'bg-green-100 text-green-600' },
     { label: 'Total Orders', value: '156', icon: ShoppingCart, color: 'bg-blue-100 text-blue-600' },
@@ -485,8 +488,48 @@ function OverviewSection() {
     { label: 'Pending Orders', value: '8', icon: AlertTriangle, color: 'bg-yellow-100 text-yellow-600' },
   ];
 
+  const handleSeedProducts = async () => {
+    if (!confirm('This will add sample products to your database. Continue?')) {
+      return;
+    }
+    
+    setSeeding(true);
+    try {
+      await seedProducts();
+      alert('✅ Products seeded successfully! Refresh the page to see them.');
+      window.location.reload();
+    } catch (error) {
+      console.error('Error seeding products:', error);
+      alert('❌ Error seeding products. Check console for details.');
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Seed Products Button */}
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 rounded-2xl p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+              <Database className="h-5 w-5 text-pink-500" />
+              Quick Setup
+            </h3>
+            <p className="text-sm text-gray-600 mt-1">Add sample products to get started (includes Water Bottle in Others category)</p>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSeedProducts}
+            disabled={seeding}
+            className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-pink-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {seeding ? 'Seeding...' : 'Seed Products'}
+          </motion.button>
+        </div>
+      </motion.div>
+
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} whileHover={{ scale: 1.05, y: -5 }} className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all">

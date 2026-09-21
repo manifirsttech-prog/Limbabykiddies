@@ -80,7 +80,7 @@ export default function Footer() {
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Shoes</Link></li>
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">School Bags</Link></li>
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Toys</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Baby Accessories</Link></li>
+              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Others</Link></li>
             </ul>
           </motion.div>
 

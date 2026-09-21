@@ -16,7 +16,7 @@ const categories = [
   { name: 'Toys', icon: FaGamepad, color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
   { name: 'School Bags', icon: FaGraduationCap, color: 'bg-green-50 text-green-700 border-green-200' },
   { name: 'Bicycles', icon: FaBicycle, color: 'bg-purple-50 text-purple-700 border-purple-200' },
-  { name: 'Baby Accessories', icon: FaBaby, color: 'bg-orange-50 text-orange-700 border-orange-200' },
+  { name: 'Others', icon: FaBaby, color: 'bg-orange-50 text-orange-700 border-orange-200' },
 ];
 
 export default function HomePage() {

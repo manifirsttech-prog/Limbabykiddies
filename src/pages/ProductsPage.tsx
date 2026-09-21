@@ -8,7 +8,7 @@ import { getAllProducts } from '../lib/firestore';
 import { Product, ProductCategory } from '../types/product';
 
 const categories: (ProductCategory | 'All')[] = [
-  'All', 'Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Baby Accessories', 'Toys',
+  'All', 'Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Others', 'Toys',
 ];
 
 const categoryIcons: Record<string, React.ElementType> = {
@@ -17,7 +17,7 @@ const categoryIcons: Record<string, React.ElementType> = {
   Shoes: FaShoePrints,
   'School Bags': FaGraduationCap,
   Bicycles: FaBicycle,
-  'Baby Accessories': FaBaby,
+  'Others': FaBaby,
   Toys: FaGamepad,
 };
 
