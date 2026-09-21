@@ -27,10 +27,27 @@ const loadPaystackScript = (): Promise<boolean> => {
       resolve(true);
       return;
     }
+    
+    // Check if script is already loading
+    const existingScript = document.querySelector('script[src*="paystack"]');
+    if (existingScript) {
+      // Wait for existing script to load
+      existingScript.addEventListener('load', () => {
+        // Wait a bit for PaystackPop to be available
+        setTimeout(() => resolve(!!(window as any).PaystackPop), 200);
+      });
+      return;
+    }
+    
     const script = document.createElement('script');
     script.src = 'https://js.paystack.co/v1/inline.js';
     script.async = true;
-    script.onload = () => resolve(true);
+    script.onload = () => {
+      // Wait for PaystackPop to be available after script loads
+      setTimeout(() => {
+        resolve(!!(window as any).PaystackPop);
+      }, 300);
+    };
     script.onerror = () => resolve(false);
     document.body.appendChild(script);
   });
@@ -83,8 +100,8 @@ export default function CartPage() {
       }
 
       const loaded = await loadPaystackScript();
-      if (!loaded) {
-        alert('Failed to load Paystack payment gateway. Please check your internet connection.');
+      if (!loaded || !(window as any).PaystackPop) {
+        alert('Failed to load Paystack payment gateway. Please refresh the page and try again.');
         setIsProcessing(false);
         return;
       }
