@@ -75,13 +75,13 @@ export default function Footer() {
           >
             <h3 className="text-white font-semibold mb-4">Categories</h3>
             <ul className="space-y-2">
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Clothing</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Shoes</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">School Bags</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Bicycles</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Toys</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Water Bottle</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Others</Link></li>
+              <li><Link to="/products?category=Clothing" className="text-sm hover:text-pink-400 transition-colors">Clothing</Link></li>
+              <li><Link to="/products?category=Shoes" className="text-sm hover:text-pink-400 transition-colors">Shoes</Link></li>
+              <li><Link to="/products?category=School%20Bags" className="text-sm hover:text-pink-400 transition-colors">School Bags</Link></li>
+              <li><Link to="/products?category=Bicycles" className="text-sm hover:text-pink-400 transition-colors">Bicycles</Link></li>
+              <li><Link to="/products?category=Toys" className="text-sm hover:text-pink-400 transition-colors">Toys</Link></li>
+              <li><Link to="/products?category=Water%20Bottle" className="text-sm hover:text-pink-400 transition-colors">Water Bottle</Link></li>
+              <li><Link to="/products?category=Others" className="text-sm hover:text-pink-400 transition-colors">Others</Link></li>
             </ul>
           </motion.div>
 
