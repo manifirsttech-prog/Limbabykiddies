@@ -7,7 +7,7 @@ import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad }
 import AnimatedSection from '../components/AnimatedSection';
 import StaggerContainer, { StaggerItem } from '../components/StaggerContainer';
 import ProductCard from '../components/ProductCard';
-import { getFeaturedProducts, getBestSellers } from '../lib/firestore';
+import { getLatestFromEachCategory, getBestSellers } from '../lib/firestore';
 import { Product } from '../types/product';
 
 const categories = [
@@ -27,11 +27,11 @@ export default function HomePage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const [featuredProducts, bestSellerProducts] = await Promise.all([
-          getFeaturedProducts(),
+        const [latestProducts, bestSellerProducts] = await Promise.all([
+          getLatestFromEachCategory(),
           getBestSellers()
         ]);
-        setFeatured(featuredProducts);
+        setFeatured(latestProducts);
         setBestSellers(bestSellerProducts);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -170,13 +170,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Latest Products from Each Category */}
       <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
-              <p className="mt-2 text-gray-600">Handpicked favorites for your little ones</p>
+              <h2 className="text-3xl font-bold text-gray-900">Latest Arrivals</h2>
+              <p className="mt-2 text-gray-600">Newest products from each category</p>
             </div>
             <motion.div whileHover={{ x: 5 }}>
               <Link to="/products" className="hidden sm:flex items-center gap-1 text-pink-500 font-medium hover:text-pink-600">
@@ -184,8 +184,8 @@ export default function HomePage() {
               </Link>
             </motion.div>
           </AnimatedSection>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featured.slice(0, 4).map((product, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featured.map((product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             ))}
           </div>

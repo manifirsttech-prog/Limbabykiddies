@@ -94,6 +94,43 @@ export const getFeaturedProducts = async (): Promise<Product[]> => {
   }
 };
 
+// Fetch latest product from each category
+export const getLatestFromEachCategory = async (): Promise<Product[]> => {
+  try {
+    const querySnapshot = await getDocs(collection(db, PRODUCTS_COLLECTION));
+    const allProducts: Product[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      allProducts.push({
+        id: doc.id,
+        ...doc.data()
+      } as Product);
+    });
+    
+    // Group products by category
+    const categoryMap = new Map<string, Product[]>();
+    allProducts.forEach(product => {
+      if (!categoryMap.has(product.category)) {
+        categoryMap.set(product.category, []);
+      }
+      categoryMap.get(product.category)!.push(product);
+    });
+    
+    // Get the latest product from each category (first one in each group)
+    const latestProducts: Product[] = [];
+    categoryMap.forEach(products => {
+      if (products.length > 0) {
+        latestProducts.push(products[0]);
+      }
+    });
+    
+    return latestProducts;
+  } catch (error) {
+    console.error('Error fetching latest products from each category:', error);
+    throw error;
+  }
+};
+
 // Fetch best sellers
 export const getBestSellers = async (): Promise<Product[]> => {
   try {
