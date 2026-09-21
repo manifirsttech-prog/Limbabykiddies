@@ -70,7 +70,15 @@ export default function ProductsPage() {
 
    const filteredProducts = useMemo(() => {
   let result = products;
-  if (selectedCategory !== 'All') result = result.filter((p) => p.category === selectedCategory);
+  
+  console.log('All products:', products.length);
+  console.log('Selected category:', selectedCategory);
+  
+  if (selectedCategory !== 'All') {
+    result = result.filter((p) => p.category === selectedCategory);
+    console.log(`Products in ${selectedCategory}:`, result.length);
+  }
+  
   if (searchQuery.trim()) {
     const query = searchQuery.toLowerCase();
     result = result.filter(
