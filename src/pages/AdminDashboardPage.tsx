@@ -746,35 +746,7 @@ function OrdersSection({ orders, onRefresh }: { orders: Order[]; onRefresh: () =
             </div>
           </>
         )
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatPrice(order.total)}</td>
-                    <td className="px-4 py-3">
-                      <select
-                        value={order.status || 'pending'}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value as Order['status'])}
-                        className={`text-xs px-2 py-1 rounded-lg font-medium border focus:outline-none cursor-pointer ${getStatusColor(order.status)}`}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="processing">Processing</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedOrder(order)} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-pink-600 hover:bg-pink-50 rounded-lg transition-colors">
-                          <Eye className="h-3.5 w-3.5" /> View
-                        </motion.button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+      }
       </motion.div>
 
       {/* Order Detail Modal */}
