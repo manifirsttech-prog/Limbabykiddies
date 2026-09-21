@@ -10,7 +10,9 @@ export const cld = new Cloudinary({
 // Cloudinary configuration
 export const CLOUDINARY_CONFIG = {
   cloudName: 'pxz965s7',
-  uploadPreset: 'limbaby_kiddies', // You'll need to create this in Cloudinary dashboard
+  apiKey: '517622224319167',
+  apiSecret: 'tdhwQ-_lwCifLR8imWLS3iWdg7M',
+  uploadPreset: 'Lim baby', // Upload preset from Cloudinary dashboard
   apiUrl: 'https://api.cloudinary.com/v1_1/pxz965s7'
 };
 
