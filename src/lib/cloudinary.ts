@@ -12,20 +12,21 @@ export const CLOUDINARY_CONFIG = {
   cloudName: 'pxz965s7',
   apiKey: '517622224319167',
   apiSecret: 'tdhwQ-_lwCifLR8imWLS3iWdg7M',
-  uploadPreset: 'Lim_baby', // Upload preset from Cloudinary dashboard (no spaces)
+  uploadPreset: 'Lim baby', // Upload preset from Cloudinary dashboard
+  uploadPresetId: '99d6fe68-9c4d-4e96-a463-2a7926534f9d',
   apiUrl: 'https://api.cloudinary.com/v1_1/pxz965s7'
 };
 
 // Upload function for images
 export const uploadImage = async (file: File): Promise<string> => {
-  console.log('Starting image upload:', file.name, 'Size:', file.size, 'bytes');
+  console.log('📤 Starting image upload:', file.name, 'Size:', file.size, 'bytes');
   
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
   
   try {
-    console.log('Uploading to Cloudinary with preset:', CLOUDINARY_CONFIG.uploadPreset);
+    console.log('🔄 Uploading to Cloudinary with preset:', CLOUDINARY_CONFIG.uploadPreset);
     
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`,
@@ -35,26 +36,31 @@ export const uploadImage = async (file: File): Promise<string> => {
       }
     );
     
-    console.log('Upload response status:', response.status);
+    console.log('📥 Upload response status:', response.status);
+    
+    const responseData = await response.json();
+    console.log('📦 Response data:', responseData);
     
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Cloudinary upload error:', errorData);
-      throw new Error(errorData.error?.message || `Upload failed with status ${response.status}`);
+      const errorMessage = responseData.error?.message || `Upload failed with status ${response.status}`;
+      console.error('❌ Cloudinary upload error:', errorMessage);
+      console.error('🔍 Full error response:', responseData);
+      throw new Error(errorMessage);
     }
     
-    const data = await response.json();
-    console.log('Upload successful, URL:', data.secure_url);
-    return data.secure_url;
-  } catch (error) {
-    console.error('Error uploading image:', error);
+    const imageUrl = responseData.secure_url;
+    console.log('✅ Upload successful, URL:', imageUrl);
+    return imageUrl;
+  } catch (error: any) {
+    console.error('❌ Error uploading image:', error);
+    console.error('🔍 Error details:', error.message);
     throw error;
   }
 };
 
 // Upload function for videos
 export const uploadVideo = async (file: File): Promise<string> => {
-  console.log('Starting video upload:', file.name, 'Size:', file.size, 'bytes');
+  console.log('📤 Starting video upload:', file.name, 'Size:', file.size, 'bytes');
   
   const formData = new FormData();
   formData.append('file', file);
@@ -62,7 +68,7 @@ export const uploadVideo = async (file: File): Promise<string> => {
   formData.append('resource_type', 'video');
   
   try {
-    console.log('Uploading video to Cloudinary with preset:', CLOUDINARY_CONFIG.uploadPreset);
+    console.log('🔄 Uploading video to Cloudinary with preset:', CLOUDINARY_CONFIG.uploadPreset);
     
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/video/upload`,
@@ -72,19 +78,24 @@ export const uploadVideo = async (file: File): Promise<string> => {
       }
     );
     
-    console.log('Video upload response status:', response.status);
+    console.log('📥 Video upload response status:', response.status);
+    
+    const responseData = await response.json();
+    console.log('📦 Response data:', responseData);
     
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Cloudinary video upload error:', errorData);
-      throw new Error(errorData.error?.message || `Video upload failed with status ${response.status}`);
+      const errorMessage = responseData.error?.message || `Video upload failed with status ${response.status}`;
+      console.error('❌ Cloudinary video upload error:', errorMessage);
+      console.error('🔍 Full error response:', responseData);
+      throw new Error(errorMessage);
     }
     
-    const data = await response.json();
-    console.log('Video upload successful, URL:', data.secure_url);
-    return data.secure_url;
-  } catch (error) {
-    console.error('Error uploading video:', error);
+    const videoUrl = responseData.secure_url;
+    console.log('✅ Video upload successful, URL:', videoUrl);
+    return videoUrl;
+  } catch (error: any) {
+    console.error('❌ Error uploading video:', error);
+    console.error('🔍 Error details:', error.message);
     throw error;
   }
 };

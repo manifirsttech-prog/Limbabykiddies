@@ -141,27 +141,34 @@ export default function AdminDashboardPage() {
     try {
       // Upload images to Cloudinary
       if (imageFiles && imageFiles.length > 0) {
-        console.log(`Starting upload of ${imageFiles.length} image(s)...`);
+        console.log(`📸 Starting upload of ${imageFiles.length} image(s)...`);
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
-          console.log(`Uploading image ${i + 1}/${imageFiles.length}: ${file.name}`);
+          console.log(`📷 Uploading image ${i + 1}/${imageFiles.length}: ${file.name}`);
           const url = await uploadImage(file);
-          console.log(`Image ${i + 1} uploaded successfully:`, url);
+          console.log(`✅ Image ${i + 1} uploaded successfully:`, url);
           uploadedImages.push(url);
         }
       }
 
       // Upload video to Cloudinary
       if (videoFile) {
-        console.log('Starting video upload:', videoFile.name);
+        console.log('🎥 Starting video upload:', videoFile.name);
         uploadedVideo = await uploadVideo(videoFile);
-        console.log('Video uploaded successfully:', uploadedVideo);
+        console.log('✅ Video uploaded successfully:', uploadedVideo);
       }
 
-      console.log('All files uploaded successfully');
+      console.log('✅ All files uploaded successfully');
       return { images: uploadedImages, video: uploadedVideo };
     } catch (error: any) {
-      console.error('Error in uploadFiles:', error);
+      console.error('❌ Error in uploadFiles:', error);
+      
+      // If we have some images uploaded, return those instead of failing completely
+      if (uploadedImages.length > 0) {
+        console.log('⚠️ Some images uploaded successfully, continuing with partial upload');
+        return { images: uploadedImages, video: uploadedVideo };
+      }
+      
       throw new Error(`File upload failed: ${error.message || 'Unknown error'}`);
     }
   };
@@ -189,12 +196,12 @@ export default function AdminDashboardPage() {
   const handleSave = async () => {
     setUploading(true);
     try {
-      console.log('Starting product save process...');
+      console.log('🚀 Starting product save process...');
       
       // Upload files to Cloudinary
-      console.log('Uploading files to Cloudinary...');
+      console.log('📤 Uploading files to Cloudinary...');
       const { images, video } = await uploadFiles();
-      console.log('Files uploaded successfully:', { images, video });
+      console.log('✅ Files uploaded successfully:', { images, video });
 
       const productData = {
         name: formData.name,
@@ -212,7 +219,7 @@ export default function AdminDashboardPage() {
         bestSeller: editingProduct?.bestSeller || false,
       };
 
-      console.log('Saving product to Firestore...');
+      console.log('💾 Saving product to Firestore...');
       
       if (editingProduct) {
         // Update existing product in Firestore
@@ -234,13 +241,26 @@ export default function AdminDashboardPage() {
         setProductList((prev) => [...prev, newProduct]);
       }
       
-      console.log('Product saved successfully!');
+      console.log('✅ Product saved successfully!');
       setShowModal(false);
-      alert(editingProduct ? 'Product updated successfully!' : 'Product added successfully!');
+      alert(editingProduct ? '✅ Product updated successfully!' : '✅ Product added successfully!');
     } catch (error: any) {
-      console.error('Error saving product:', error);
+      console.error('❌ Error saving product:', error);
+      console.error('🔍 Error details:', error);
+      
       const errorMessage = error?.message || 'Unknown error occurred';
-      alert(`Error saving product: ${errorMessage}\n\nPlease check the browser console for more details.`);
+      
+      // Provide helpful error messages based on common issues
+      let helpMessage = '';
+      if (errorMessage.includes('Upload preset') || errorMessage.includes('preset')) {
+        helpMessage = '\n\n💡 TIP: Check your Cloudinary upload preset settings:\n1. Go to Cloudinary Dashboard → Settings → Upload\n2. Find your upload preset "Lim baby"\n3. Make sure "Signing Mode" is set to "Unsigned"\n4. Save the settings';
+      } else if (errorMessage.includes('File size') || errorMessage.includes('size')) {
+        helpMessage = '\n\n💡 TIP: Your file might be too large. Try:\n- Compressing the image\n- Using a smaller image (under 5MB)\n- Converting to JPG format';
+      } else if (errorMessage.includes('format') || errorMessage.includes('type')) {
+        helpMessage = '\n\n💡 TIP: Check your file format:\n- Images: Use JPG, PNG, GIF, or WebP\n- Videos: Use MP4, MOV, or WebM';
+      }
+      
+      alert(`❌ Error saving product:\n\n${errorMessage}${helpMessage}\n\n📋 Check browser console (F12) for detailed logs.`);
     } finally {
       setUploading(false);
     }
