@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiCreditCard, FiTruck, FiCheckCircle, FiUser, FiMail, FiPhone, FiHome, FiFileText } from 'react-icons/fi';
+import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiCreditCard, FiCheckCircle, FiUser, FiMail, FiPhone, FiHome, FiFileText } from 'react-icons/fi';
 import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import AnimatedSection from '../components/AnimatedSection';
@@ -17,8 +17,7 @@ export default function CartPage() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', phone: '', address: '', city: '', notes: '' });
 
-  const deliveryFee = totalPrice >= 25000 ? 0 : 2500;
-  const orderTotal = totalPrice + deliveryFee;
+  const orderTotal = totalPrice;
 
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,10 +130,6 @@ export default function CartPage() {
             </h2>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between"><span className="text-gray-600">Subtotal</span><span className="font-medium">{formatPrice(totalPrice)}</span></div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Delivery</span>
-                <span className="font-medium">{deliveryFee === 0 ? <span className="text-green-600">Free</span> : formatPrice(deliveryFee)}</span>
-              </div>
               <div className="border-t-2 border-pink-100 pt-3 flex justify-between">
                 <span className="font-bold text-gray-900">Total</span>
                 <span className="font-bold text-xl text-pink-500">{formatPrice(orderTotal)}</span>
@@ -157,14 +152,13 @@ export default function CartPage() {
               </div>
               <div className="relative">
                 <FiHome className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input type="text" placeholder="Delivery Address" required value={customerInfo.address} onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })} className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 transition-all" />
+                <input type="text" placeholder="Address" required value={customerInfo.address} onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })} className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 transition-all" />
               </div>
               <input type="text" placeholder="City" required value={customerInfo.city} onChange={(e) => setCustomerInfo({ ...customerInfo, city: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 transition-all" />
               <textarea placeholder="Order notes (optional)" rows={2} value={customerInfo.notes} onChange={(e) => setCustomerInfo({ ...customerInfo, notes: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 resize-none transition-all" />
 
               <div className="border-t-2 border-gray-100 pt-4 mt-4">
-                <div className="flex items-center gap-2 text-sm text-gray-600 mb-3"><FiCreditCard className="h-4 w-4 text-pink-500" /> Payment: Cash on Delivery (Mock)</div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 mb-4"><FiTruck className="h-4 w-4 text-pink-500" /> Estimated delivery: 3-5 business days</div>
+                <div className="flex items-center gap-2 text-sm text-gray-600 mb-4"><FiCreditCard className="h-4 w-4 text-pink-500" /> Payment: Cash on Delivery (Mock)</div>
               </div>
 
               <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
