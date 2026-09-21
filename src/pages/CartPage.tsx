@@ -47,10 +47,22 @@ export default function CartPage() {
   // Cleanup Paystack iframe on component unmount (fixes mobile back button issue)
   useEffect(() => {
     return () => {
+      // Remove all Paystack-related elements
       const paystackFrame = document.querySelector('iframe[src*="paystack"]');
       if (paystackFrame) {
         paystackFrame.remove();
       }
+      const paystackContainer = document.querySelector('.paystack-container');
+      if (paystackContainer) {
+        paystackContainer.remove();
+      }
+      const overlay = document.querySelector('body > div[style*="position: fixed"]');
+      if (overlay && overlay.querySelector('iframe')) {
+        overlay.remove();
+      }
+      // Reset body styles
+      document.body.style.overflow = '';
+      document.body.style.position = '';
     };
   }, []);
 
@@ -157,11 +169,25 @@ export default function CartPage() {
         },
         onClose: function() {
           setIsProcessing(false);
-          // Clean up Paystack iframe on mobile to prevent navigation blocking
-          const paystackFrame = document.querySelector('iframe[src*="paystack"]');
-          if (paystackFrame) {
-            paystackFrame.remove();
-          }
+          // Clean up Paystack iframe and overlay on mobile to prevent navigation blocking
+          setTimeout(() => {
+            const paystackFrame = document.querySelector('iframe[src*="paystack"]');
+            if (paystackFrame) {
+              paystackFrame.remove();
+            }
+            // Also remove any lingering Paystack overlays/containers
+            const paystackContainer = document.querySelector('.paystack-container');
+            if (paystackContainer) {
+              paystackContainer.remove();
+            }
+            const overlay = document.querySelector('body > div[style*="position: fixed"]');
+            if (overlay && overlay.querySelector('iframe[src*="paystack"]')) {
+              overlay.remove();
+            }
+            // Reset body scroll lock (Paystack sometimes locks body scroll)
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+          }, 100);
         },
         callback: function(response: any) {
           handlePaymentSuccess(response);
