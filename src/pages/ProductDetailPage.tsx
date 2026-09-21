@@ -195,17 +195,9 @@ export default function ProductDetailPage() {
           </motion.button>
 
           <div className="mt-8 space-y-4 border-t-2 border-gray-100 pt-6">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} className="flex items-center gap-3 text-sm text-gray-600">
-              <FiTruck className="h-5 w-5 text-pink-500" />
-              <span>Free delivery on orders over ₦25,000</span>
-            </motion.div>
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }} className="flex items-center gap-3 text-sm text-gray-600">
               <FiShield className="h-5 w-5 text-pink-500" />
               <span>Safety certified and quality guaranteed</span>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }} className="flex items-center gap-3 text-sm text-gray-600">
-              <FiRotateCw className="h-5 w-5 text-pink-500" />
-              <span>30-day hassle-free returns</span>
             </motion.div>
           </div>
         </motion.section>
