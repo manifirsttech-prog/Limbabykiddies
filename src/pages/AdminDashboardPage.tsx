@@ -203,7 +203,8 @@ export default function AdminDashboardPage() {
       const { images, video } = await uploadFiles();
       console.log('✅ Files uploaded successfully:', { images, video });
 
-      const productData = {
+      // Build product data - Firestore doesn't accept undefined values
+      const productData: any = {
         name: formData.name,
         slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
         category: formData.category,
@@ -211,13 +212,25 @@ export default function AdminDashboardPage() {
         description: formData.description,
         stock: parseInt(formData.stock),
         status: formData.status,
-        sizes: formData.sizes ? formData.sizes.split(',').map(s => s.trim()) : undefined,
-        colors: formData.colors ? formData.colors.split(',').map(c => c.trim()) : undefined,
         images: images.length > 0 ? images : (editingProduct?.images || ['https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=600&h=600&fit=crop']),
-        video: video || editingProduct?.video,
         featured: editingProduct?.featured || false,
         bestSeller: editingProduct?.bestSeller || false,
       };
+
+      // Only add optional fields if they have values (Firestore rejects undefined)
+      if (formData.sizes && formData.sizes.trim()) {
+        productData.sizes = formData.sizes.split(',').map(s => s.trim()).filter(s => s);
+      }
+      
+      if (formData.colors && formData.colors.trim()) {
+        productData.colors = formData.colors.split(',').map(c => c.trim()).filter(c => c);
+      }
+      
+      if (video) {
+        productData.video = video;
+      } else if (editingProduct?.video) {
+        productData.video = editingProduct.video;
+      }
 
       console.log('💾 Saving product to Firestore...');
       

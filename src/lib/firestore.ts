@@ -15,6 +15,17 @@ import { Product, ProductCategory } from '../types/product';
 
 const PRODUCTS_COLLECTION = 'products';
 
+// Helper function to remove undefined values from object
+const removeUndefined = (obj: any): any => {
+  const cleaned: any = {};
+  Object.keys(obj).forEach(key => {
+    if (obj[key] !== undefined) {
+      cleaned[key] = obj[key];
+    }
+  });
+  return cleaned;
+};
+
 // Fetch all products
 export const getAllProducts = async (): Promise<Product[]> => {
   try {
@@ -135,7 +146,9 @@ export const getProductsByCategory = async (category: ProductCategory): Promise<
 // Add new product
 export const addProduct = async (product: Omit<Product, 'id'>): Promise<string> => {
   try {
-    const docRef = await addDoc(collection(db, PRODUCTS_COLLECTION), product);
+    // Remove undefined values before saving to Firestore
+    const cleanProduct = removeUndefined(product);
+    const docRef = await addDoc(collection(db, PRODUCTS_COLLECTION), cleanProduct);
     return docRef.id;
   } catch (error) {
     console.error('Error adding product:', error);
@@ -146,8 +159,10 @@ export const addProduct = async (product: Omit<Product, 'id'>): Promise<string> 
 // Update product
 export const updateProduct = async (productId: string, productData: Partial<Product>): Promise<void> => {
   try {
+    // Remove undefined values before updating in Firestore
+    const cleanProductData = removeUndefined(productData);
     const productRef = doc(db, PRODUCTS_COLLECTION, productId);
-    await updateDoc(productRef, productData);
+    await updateDoc(productRef, cleanProductData);
   } catch (error) {
     console.error('Error updating product:', error);
     throw error;
