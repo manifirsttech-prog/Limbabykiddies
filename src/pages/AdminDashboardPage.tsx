@@ -4,11 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Baby, LayoutDashboard, Package, LogOut, ShoppingCart,
   PackageCheck, AlertTriangle, TrendingUp, Plus, Edit, Trash2, X,
-  BarChart3, ExternalLink, Eye, MapPin, Phone, Mail, Upload, Image as ImageIcon, Video, Database
+  BarChart3, ExternalLink, Eye, MapPin, Phone, Mail, Upload, Image as ImageIcon, Video
 } from 'lucide-react';
 import { uploadImage, uploadVideo } from '../lib/cloudinary';
 import { getAllProducts, addProduct, updateProduct, deleteProduct } from '../lib/firestore';
-import { seedProducts } from '../lib/seedProducts';
 import { Product, ProductCategory } from '../types/product';
 import { formatPrice } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
@@ -33,50 +32,6 @@ interface Order {
   status: 'pending' | 'processing' | 'shipped' | 'delivered';
   date: string;
 }
-
-const mockOrders: Order[] = [
-  {
-    id: 'ORD-001',
-    customerName: 'Sarah Johnson',
-    customerEmail: 'sarah.j@email.com',
-    customerPhone: '+234 801 234 5678',
-    customerAddress: '456 Admiralty Way, Lekki Phase 1, Lagos',
-    items: [
-      { productName: 'Organic Cotton Baby Onesie', quantity: 2, price: 12500, image: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=100&h=100&fit=crop', size: '3-6M', color: 'Pink' },
-      { productName: 'Silicone Baby Feeding Set', quantity: 1, price: 15000, image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=100&h=100&fit=crop', color: 'Sage Green' },
-    ],
-    total: 40000,
-    status: 'pending',
-    date: '2024-01-15',
-  },
-  {
-    id: 'ORD-002',
-    customerName: 'Mike Peters',
-    customerEmail: 'mike.p@email.com',
-    customerPhone: '+234 802 345 6789',
-    customerAddress: '789 Allen Avenue, Ikeja, Lagos',
-    items: [
-      { productName: '16-inch Kids Bicycle', quantity: 1, price: 75000, image: 'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=100&h=100&fit=crop', color: 'Red' },
-    ],
-    total: 75000,
-    status: 'processing',
-    date: '2024-01-15',
-  },
-  {
-    id: 'ORD-003',
-    customerName: 'Emily Davis',
-    customerEmail: 'emily.d@email.com',
-    customerPhone: '+234 803 456 7890',
-    customerAddress: '321 Ozumba Mbadiwe, Victoria Island, Lagos',
-    items: [
-      { productName: 'Kids Sneakers - Adventure Edition', quantity: 1, price: 20000, image: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=100&h=100&fit=crop', size: 'US 10', color: 'Blue/White' },
-      { productName: 'Rainbow School Backpack', quantity: 1, price: 17500, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=100&h=100&fit=crop', color: 'Rainbow' },
-    ],
-    total: 37500,
-    status: 'shipped',
-    date: '2024-01-14',
-  },
-];
 
 const categories: ProductCategory[] = ['Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Others', 'Toys'];
 
@@ -351,7 +306,7 @@ export default function AdminDashboardPage() {
         </header>
 
         <main className="flex-1 p-6 overflow-auto">
-          {activeTab === 'overview' && <OverviewSection />}
+          {activeTab === 'overview' && <OverviewSection products={productList} />}
           {activeTab === 'orders' && <OrdersSection />}
           {activeTab === 'products' && (
             loading ? (
@@ -478,57 +433,22 @@ export default function AdminDashboardPage() {
   );
 }
 
-function OverviewSection() {
-  const [seeding, setSeeding] = useState(false);
-  
-  const stats = [
-    { label: 'Total Revenue', value: '320,000', icon: '₦', color: 'bg-green-100 text-green-600' },
-    { label: 'Total Orders', value: '156', icon: ShoppingCart, color: 'bg-blue-100 text-blue-600' },
-    { label: 'Total Products', value: '12', icon: PackageCheck, color: 'bg-purple-100 text-purple-600' },
-    { label: 'Pending Orders', value: '8', icon: AlertTriangle, color: 'bg-yellow-100 text-yellow-600' },
-  ];
+function OverviewSection({ products }: { products: Product[] }) {
+  // Calculate real stats from products
+  const totalProducts = products.length;
+  const totalRevenue = products.reduce((sum, p) => sum + (p.price * (p.stock || 0)), 0);
+  const lowStockProducts = products.filter(p => p.stock !== undefined && p.stock < 10).length;
+  const activeProducts = products.filter(p => p.status === 'active').length;
 
-  const handleSeedProducts = async () => {
-    if (!confirm('This will add sample products to your database. Continue?')) {
-      return;
-    }
-    
-    setSeeding(true);
-    try {
-      await seedProducts();
-      alert('✅ Products seeded successfully! Refresh the page to see them.');
-      window.location.reload();
-    } catch (error) {
-      console.error('Error seeding products:', error);
-      alert('❌ Error seeding products. Check console for details.');
-    } finally {
-      setSeeding(false);
-    }
-  };
+  const stats = [
+    { label: 'Total Products', value: totalProducts.toString(), icon: PackageCheck, color: 'bg-purple-100 text-purple-600' },
+    { label: 'Active Products', value: activeProducts.toString(), icon: Package, color: 'bg-green-100 text-green-600' },
+    { label: 'Low Stock', value: lowStockProducts.toString(), icon: AlertTriangle, color: 'bg-yellow-100 text-yellow-600' },
+    { label: 'Inventory Value', value: formatPrice(totalRevenue), icon: '₦', color: 'bg-blue-100 text-blue-600' },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Seed Products Button */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 rounded-2xl p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-              <Database className="h-5 w-5 text-pink-500" />
-              Quick Setup
-            </h3>
-            <p className="text-sm text-gray-600 mt-1">Add sample products to get started (includes Water Bottle in Others category)</p>
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSeedProducts}
-            disabled={seeding}
-            className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-pink-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {seeding ? 'Seeding...' : 'Seed Products'}
-          </motion.button>
-        </div>
-      </motion.div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
@@ -537,7 +457,6 @@ function OverviewSection() {
               <div>
                 <p className="text-sm text-gray-500">{stat.label}</p>
                 <p className="text-2xl font-bold text-gray-900 mt-1">
-                  {stat.label === 'Total Revenue' && <span className="text-green-600">₦</span>}
                   {stat.value}
                 </p>
               </div>
@@ -553,18 +472,39 @@ function OverviewSection() {
         ))}
       </div>
 
+      {/* Recent Products */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-2xl border-2 border-gray-100 p-6 hover:shadow-lg transition-all">
         <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <BarChart3 className="h-5 w-5 text-pink-500" /> Sales Overview
+          <Package className="h-5 w-5 text-pink-500" /> Recent Products
         </h3>
-        <div className="h-48 bg-gradient-to-t from-pink-50 to-white rounded-xl flex items-end justify-around px-4 pb-4">
-          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
-            <motion.div key={day} initial={{ height: 0 }} animate={{ height: `${[40, 65, 50, 80, 60, 90, 70][i]}%` }} transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }} className="flex flex-col items-center gap-1">
-              <div className="w-8 bg-gradient-to-t from-pink-500 to-pink-400 rounded-t-lg" style={{ height: '100%' }}></div>
-              <span className="text-xs text-gray-500">{day}</span>
-            </motion.div>
-          ))}
-        </div>
+        {products.length === 0 ? (
+          <div className="text-center py-8">
+            <Package className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500">No products yet. Add your first product to get started!</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {products.slice(0, 5).map((product) => (
+              <div key={product.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                <img src={product.images[0]} alt={product.name} className="w-12 h-12 rounded-lg object-cover" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-gray-900 truncate">{product.name}</p>
+                  <p className="text-sm text-gray-500">{product.category} • {formatPrice(product.price)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900">{product.stock || 0} in stock</p>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    product.status === 'active' ? 'bg-green-100 text-green-700' :
+                    product.status === 'draft' ? 'bg-gray-100 text-gray-700' :
+                    'bg-red-100 text-red-700'
+                  }`}>
+                    {product.status}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </motion.div>
     </div>
   );
@@ -572,6 +512,14 @@ function OverviewSection() {
 
 function OrdersSection() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  // TODO: Fetch orders from Firestore when orders collection is implemented
+  // For now, show empty state
+  useEffect(() => {
+    // Orders will be fetched from Firestore when the orders collection is set up
+    setOrders([]);
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -588,19 +536,19 @@ function OrdersSection() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} whileHover={{ scale: 1.05, y: -5 }} className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all">
           <p className="text-sm text-gray-500">Total Orders</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{mockOrders.length}</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{orders.length}</p>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} whileHover={{ scale: 1.05, y: -5 }} className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all">
           <p className="text-sm text-gray-500">Pending</p>
-          <p className="text-2xl font-bold text-yellow-600 mt-1">{mockOrders.filter(o => o.status === 'pending').length}</p>
+          <p className="text-2xl font-bold text-yellow-600 mt-1">{orders.filter((o: Order) => o.status === 'pending').length}</p>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} whileHover={{ scale: 1.05, y: -5 }} className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all">
           <p className="text-sm text-gray-500">Processing</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">{mockOrders.filter(o => o.status === 'processing').length}</p>
+          <p className="text-2xl font-bold text-blue-600 mt-1">{orders.filter((o: Order) => o.status === 'processing').length}</p>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} whileHover={{ scale: 1.05, y: -5 }} className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all">
           <p className="text-sm text-gray-500">Total Revenue</p>
-          <p className="text-2xl font-bold text-green-600 mt-1">{formatPrice(mockOrders.reduce((sum, o) => sum + o.total, 0))}</p>
+          <p className="text-2xl font-bold text-green-600 mt-1">{formatPrice(orders.reduce((sum: number, o: Order) => sum + o.total, 0))}</p>
         </motion.div>
       </div>
 
@@ -610,47 +558,55 @@ function OrdersSection() {
             <ShoppingCart className="h-5 w-5 text-pink-500" /> All Orders
           </h3>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Order ID</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Customer</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Date</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Items</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {mockOrders.map((order) => (
-                <motion.tr key={order.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ backgroundColor: '#fafafa' }}>
-                  <td className="px-4 py-3"><span className="text-sm font-medium text-gray-900">{order.id}</span></td>
-                  <td className="px-4 py-3">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{order.customerName}</p>
-                      <p className="text-xs text-gray-500">{order.customerEmail}</p>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">{order.date}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 hidden sm:table-cell">{order.items.length} item{order.items.length > 1 ? 's' : ''}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatPrice(order.total)}</td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium border ${getStatusColor(order.status)}`}>{order.status}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end">
-                      <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedOrder(order)} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-pink-600 hover:bg-pink-50 rounded-lg transition-colors">
-                        <Eye className="h-3.5 w-3.5" /> View
-                      </motion.button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {orders.length === 0 ? (
+          <div className="text-center py-12">
+            <ShoppingCart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h4 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h4>
+            <p className="text-gray-500">Orders will appear here when customers place orders through your store.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Customer</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Date</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Items</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {orders.map((order: Order) => (
+                  <motion.tr key={order.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ backgroundColor: '#fafafa' }}>
+                    <td className="px-4 py-3"><span className="text-sm font-medium text-gray-900">{order.id}</span></td>
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{order.customerName}</p>
+                        <p className="text-xs text-gray-500">{order.customerEmail}</p>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">{order.date}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden sm:table-cell">{order.items.length} item{order.items.length > 1 ? 's' : ''}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatPrice(order.total)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium border ${getStatusColor(order.status)}`}>{order.status}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end">
+                        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedOrder(order)} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-pink-600 hover:bg-pink-50 rounded-lg transition-colors">
+                          <Eye className="h-3.5 w-3.5" /> View
+                        </motion.button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </motion.div>
 
       {/* Order Detail Modal */}
