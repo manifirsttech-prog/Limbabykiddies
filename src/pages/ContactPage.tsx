@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FiMail, FiPhone, FiMapPin, FiSend } from 'react-icons/fi';
 import { FaInstagram, FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
 import AnimatedSection from '../components/AnimatedSection';
+import SEO from '../components/SEO/SEO';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -15,6 +16,12 @@ export default function ContactPage() {
 
   return (
     <main>
+      <SEO 
+        title="Contact Us | Limbaby Kiddies — Get in Touch"
+        description="Contact Limbaby Kiddies in Lagos, Nigeria. Reach us on WhatsApp (+2349048298906), phone, or email for all your baby and kids product inquiries."
+        keywords="contact Limbaby Kiddies, baby store Lagos contact, customer service baby store Nigeria"
+        canonical="/contact"
+      />
       <section className="bg-gradient-to-br from-pink-50 to-purple-50 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>

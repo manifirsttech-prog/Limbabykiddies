@@ -1,21 +1,30 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiShoppingCart, FiTruck, FiShield, FiRotateCw, FiMinus, FiPlus, FiChevronRight, FiCheck } from 'react-icons/fi';
 import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FaBottleWater } from 'react-icons/fa6';
 import { getProductBySlug } from '../lib/firestore';
 import { useCart } from '../context/CartContext';
 import AnimatedSection from '../components/AnimatedSection';
 import { formatPrice } from '../lib/utils';
 import { Product } from '../types/product';
 
+import SEO from '../components/SEO/SEO';
+
 const categoryIcons: Record<string, React.ElementType> = {
-  Clothing: FaTshirt, Shoes: FaShoePrints, 'School Bags': FaGraduationCap,
-  Bicycles: FaBicycle, 'Others': FaBaby, Toys: FaGamepad,
+  Clothing: FaTshirt,
+  Shoes: FaShoePrints,
+  'School Bags': FaGraduationCap,
+  Bicycles: FaBicycle,
+  Toys: FaGamepad,
+  'Water Bottle': FaBottleWater,
+  Others: FaBaby,
 };
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
@@ -67,27 +76,50 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     addToCart(product, quantity, selectedSize || undefined, selectedColor || undefined);
     setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2000);
+    // Redirect to cart after a brief moment
+    setTimeout(() => {
+      navigate('/cart');
+    }, 500);
   };
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    image: product.images,
-    description: product.description,
-    brand: { '@type': 'Brand', name: 'Limbaby kiddies' },
-    offers: {
-      '@type': 'Offer',
-      price: product.price,
-      priceCurrency: 'NGN',
-      availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+  const productJsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      image: product.images,
+      description: product.description,
+      brand: { '@type': 'Brand', name: 'Limbaby Kiddies' },
+      offers: {
+        '@type': 'Offer',
+        price: product.price,
+        priceCurrency: 'NGN',
+        availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        url: `https://limbabykiddies.com/products/${product.slug}`
+      }
     },
-  };
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://limbabykiddies.com' },
+        { '@type': 'ListItem', position: 2, name: 'Products', item: 'https://limbabykiddies.com/products' },
+        { '@type': 'ListItem', position: 3, name: product.name, item: `https://limbabykiddies.com/products/${product.slug}` }
+      ]
+    }
+  ];
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <SEO 
+        title={`${product.name} | Limbaby Kiddies`}
+        description={product.description || `Buy ${product.name} at Limbaby Kiddies. High quality ${product.category} product for kids and babies in Nigeria.`}
+        keywords={`${product.name}, ${product.category}, buy ${product.name} Nigeria, kids ${product.category}`}
+        canonical={`/products/${product.slug}`}
+        ogImage={product.images[0]}
+        ogType="product"
+        jsonLd={productJsonLd}
+      />
 
       <motion.nav initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <Link to="/" className="hover:text-pink-500">Home</Link>

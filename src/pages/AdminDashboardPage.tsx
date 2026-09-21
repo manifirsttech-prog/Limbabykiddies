@@ -7,33 +7,15 @@ import {
   BarChart3, ExternalLink, Eye, MapPin, Phone, Mail, Upload, Image as ImageIcon, Video
 } from 'lucide-react';
 import { uploadImage, uploadVideo } from '../lib/cloudinary';
-import { getAllProducts, addProduct, updateProduct, deleteProduct } from '../lib/firestore';
+import { getAllProducts, addProduct, updateProduct, deleteProduct, getAllOrders, updateOrderStatus, deleteOrder } from '../lib/firestore';
 import { Product, ProductCategory } from '../types/product';
+import { Order } from '../types/order';
 import { formatPrice } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
-interface OrderItem {
-  productName: string;
-  quantity: number;
-  price: number;
-  image: string;
-  size?: string;
-  color?: string;
-}
+const categories: ProductCategory[] = ['Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Toys', 'Water Bottle', 'Others'];
 
-interface Order {
-  id: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  customerAddress: string;
-  items: OrderItem[];
-  total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
-  date: string;
-}
-
-const categories: ProductCategory[] = ['Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Others', 'Toys'];
+import SEO from '../components/SEO/SEO';
 
 export default function AdminDashboardPage() {
   const location = useLocation();
@@ -48,28 +30,35 @@ export default function AdminDashboardPage() {
   }, [location.pathname]);
 
   const [productList, setProductList] = useState<Product[]>([]);
+  const [orderList, setOrderList] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const navigate = useNavigate();
   const { logout, currentUser } = useAuth();
 
-  // Fetch products from Firestore
+  // Fetch products and orders from Firestore
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [products, orders] = await Promise.all([
+        getAllProducts(),
+        getAllOrders().catch((err) => {
+          console.error('Error fetching orders:', err);
+          return [];
+        }),
+      ]);
+      setProductList(products);
+      setOrderList(orders);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const products = await getAllProducts();
-        setProductList(products);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        alert('Failed to load products');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchProducts();
+    loadDashboardData();
   }, []);
 
   const [formData, setFormData] = useState({
@@ -250,64 +239,107 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+      <SEO title="Admin Dashboard | Limbaby Kiddies" noindex={true} />
+      
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col h-screen sticky top-0">
-        <div className="p-6 border-b border-gray-100">
+      <aside className={`
+        fixed lg:sticky top-0 left-0 w-64 bg-white border-r border-gray-200 
+        flex flex-col h-screen z-50 transform transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <img src="/logo.png" alt="Limbaby Kiddies Logo" className="h-7 w-7 object-contain rounded-full border border-pink-200" />
             <span className="text-lg font-bold text-gray-900">Limbaby <span className="text-pink-500">kiddies</span></span>
           </Link>
-          <p className="text-xs text-gray-500 mt-1">Admin Panel</p>
+          <button 
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden text-gray-500 hover:text-gray-700"
+          >
+            <X className="h-6 w-6" />
+          </button>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          <Link to="/admin/dashboard" className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${activeTab === 'overview' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+          <Link 
+            to="/admin/dashboard" 
+            onClick={() => setSidebarOpen(false)}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${activeTab === 'overview' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'}`}>
             <LayoutDashboard className="h-4 w-4" /> Overview
           </Link>
-          <Link to="/admin/dashboard/orders" className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${activeTab === 'orders' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+          <Link 
+            to="/admin/dashboard/orders" 
+            onClick={() => setSidebarOpen(false)}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${activeTab === 'orders' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'}`}>
             <ShoppingCart className="h-4 w-4" /> Orders
           </Link>
-          <Link to="/admin/dashboard/products" className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${activeTab === 'products' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+          <Link 
+            to="/admin/dashboard/products" 
+            onClick={() => setSidebarOpen(false)}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${activeTab === 'products' ? 'bg-pink-50 text-pink-700' : 'text-gray-600 hover:bg-gray-50'}`}>
             <Package className="h-4 w-4" /> Products
           </Link>
         </nav>
         <div className="p-4 border-t border-gray-100 space-y-1">
-          <Link to="/" className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-700 transition-all hover:scale-105">
+          <Link 
+            to="/" 
+            onClick={() => setSidebarOpen(false)}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-pink-50 hover:text-pink-700 transition-all hover:scale-105">
             <ExternalLink className="h-4 w-4" /> Back to Website
           </Link>
-          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all hover:scale-105">
+          <button 
+            onClick={() => {
+              setSidebarOpen(false);
+              handleLogout();
+            }} 
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all hover:scale-105">
             <LogOut className="h-4 w-4" /> Logout
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <div className="lg:hidden flex items-center gap-2">
-            <Baby className="h-6 w-6 text-pink-500" />
-            <span className="font-bold text-gray-900">Admin</span>
-          </div>
-          <h1 className="text-lg font-bold text-gray-900 hidden lg:block">
-            {activeTab === 'overview' ? 'Dashboard Overview' : activeTab === 'orders' ? 'Order Management' : 'Product Management'}
-          </h1>
-          <div className="flex gap-2 lg:hidden">
-            <Link to="/admin/dashboard" className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === 'overview' ? 'bg-pink-100 text-pink-700' : 'bg-gray-100 text-gray-600'}`}>Overview</Link>
-            <Link to="/admin/dashboard/orders" className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === 'orders' ? 'bg-pink-100 text-pink-700' : 'bg-gray-100 text-gray-600'}`}>Orders</Link>
-            <Link to="/admin/dashboard/products" className={`px-3 py-1.5 rounded-lg text-xs font-medium ${activeTab === 'products' ? 'bg-pink-100 text-pink-700' : 'bg-gray-100 text-gray-600'}`}>Products</Link>
-          </div>
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-3">
-            <Link to="/" className="hidden md:flex items-center gap-1.5 text-sm text-gray-600 hover:text-pink-500 transition-colors">
-              <ExternalLink className="h-4 w-4" /> Back to Website
-            </Link>
-            <div className="text-sm text-gray-500">Welcome, {currentUser?.email}</div>
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden text-gray-600 hover:text-pink-500 transition-colors"
+            >
+              <LayoutDashboard className="h-6 w-6" />
+            </button>
+            <h1 className="text-base sm:text-lg font-bold text-gray-900">
+              {activeTab === 'overview' ? 'Dashboard' : activeTab === 'orders' ? 'Orders' : 'Products'}
+            </h1>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden sm:block text-xs sm:text-sm text-gray-500 truncate max-w-[150px]">
+              {currentUser?.email}
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="text-gray-600 hover:text-pink-500 transition-colors"
+              title="Logout"
+            >
+              <LogOut className="h-5 w-5" />
+            </button>
           </div>
         </header>
 
-        <main className="flex-1 p-6 overflow-auto">
-          {activeTab === 'overview' && <OverviewSection products={productList} />}
-          {activeTab === 'orders' && <OrdersSection />}
+        <main className="flex-1 p-4 sm:p-6 overflow-auto">
+          {activeTab === 'overview' && <OverviewSection products={productList} orders={orderList} />}
+          {activeTab === 'orders' && <OrdersSection orders={orderList} onRefresh={loadDashboardData} />}
           {activeTab === 'products' && (
             loading ? (
               <div className="flex items-center justify-center h-64">
@@ -433,18 +465,18 @@ export default function AdminDashboardPage() {
   );
 }
 
-function OverviewSection({ products }: { products: Product[] }) {
-  // Calculate real stats from products
+function OverviewSection({ products, orders }: { products: Product[]; orders: Order[] }) {
+  // Calculate real stats from products and orders
   const totalProducts = products.length;
-  const totalRevenue = products.reduce((sum, p) => sum + (p.price * (p.stock || 0)), 0);
-  const lowStockProducts = products.filter(p => p.stock !== undefined && p.stock < 10).length;
+  const inventoryValue = products.reduce((sum, p) => sum + (p.price * (p.stock || 0)), 0);
   const activeProducts = products.filter(p => p.status === 'active').length;
+  const totalRevenueGenerated = orders.reduce((sum, o) => sum + (o.total || 0), 0);
 
   const stats = [
     { label: 'Total Products', value: totalProducts.toString(), icon: PackageCheck, color: 'bg-purple-100 text-purple-600' },
     { label: 'Active Products', value: activeProducts.toString(), icon: Package, color: 'bg-green-100 text-green-600' },
-    { label: 'Low Stock', value: lowStockProducts.toString(), icon: AlertTriangle, color: 'bg-yellow-100 text-yellow-600' },
-    { label: 'Inventory Value', value: formatPrice(totalRevenue), icon: '₦', color: 'bg-blue-100 text-blue-600' },
+    { label: 'Total Revenue Generated', value: formatPrice(totalRevenueGenerated), icon: TrendingUp, color: 'bg-emerald-100 text-emerald-600' },
+    { label: 'Inventory Value', value: formatPrice(inventoryValue), icon: '₦', color: 'bg-blue-100 text-blue-600' },
   ];
 
   return (
@@ -471,6 +503,33 @@ function OverviewSection({ products }: { products: Product[] }) {
           </motion.div>
         ))}
       </div>
+
+      {/* Recent Orders Overview */}
+      {orders.length > 0 && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-2xl border-2 border-gray-100 p-6 hover:shadow-lg transition-all">
+          <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <ShoppingCart className="h-5 w-5 text-pink-500" /> Recent Orders
+          </h3>
+          <div className="space-y-3">
+            {orders.slice(0, 5).map((order) => (
+              <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <div>
+                  <p className="font-medium text-gray-900 text-sm">{order.customerName}</p>
+                  <p className="text-xs text-gray-500">{order.date} • {order.items?.length || 0} item(s)</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-pink-600 text-sm">{formatPrice(order.total)}</p>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                    order.paymentMethod === 'Paystack' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                  }`}>
+                    {order.paymentMethod || 'Paystack'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* Recent Products */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-2xl border-2 border-gray-100 p-6 hover:shadow-lg transition-all">
@@ -510,16 +569,35 @@ function OverviewSection({ products }: { products: Product[] }) {
   );
 }
 
-function OrdersSection() {
+function OrdersSection({ orders, onRefresh }: { orders: Order[]; onRefresh: () => void }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [orders, setOrders] = useState<Order[]>([]);
 
-  // TODO: Fetch orders from Firestore when orders collection is implemented
-  // For now, show empty state
-  useEffect(() => {
-    // Orders will be fetched from Firestore when the orders collection is set up
-    setOrders([]);
-  }, []);
+  const handleStatusChange = async (orderId: string, newStatus: Order['status']) => {
+    try {
+      await updateOrderStatus(orderId, newStatus);
+      alert(`Order status updated to ${newStatus}`);
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus });
+      }
+      onRefresh();
+    } catch (err) {
+      console.error('Error updating order status:', err);
+      alert('Failed to update order status');
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!confirm('Are you sure you want to delete this order?')) return;
+    try {
+      await deleteOrder(orderId);
+      alert('Order deleted');
+      setSelectedOrder(null);
+      onRefresh();
+    } catch (err) {
+      console.error('Error deleting order:', err);
+      alert('Failed to delete order');
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -527,52 +605,48 @@ function OrdersSection() {
       case 'processing': return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'shipped': return 'bg-purple-100 text-purple-700 border-purple-200';
       case 'delivered': return 'bg-green-100 text-green-700 border-green-200';
+      case 'cancelled': return 'bg-red-100 text-red-700 border-red-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
 
   return (
     <div className="space-y-6">
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid sm:grid-cols-2 gap-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} whileHover={{ scale: 1.05, y: -5 }} className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all">
           <p className="text-sm text-gray-500">Total Orders</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">{orders.length}</p>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} whileHover={{ scale: 1.05, y: -5 }} className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all">
-          <p className="text-sm text-gray-500">Pending</p>
-          <p className="text-2xl font-bold text-yellow-600 mt-1">{orders.filter((o: Order) => o.status === 'pending').length}</p>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} whileHover={{ scale: 1.05, y: -5 }} className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all">
-          <p className="text-sm text-gray-500">Processing</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">{orders.filter((o: Order) => o.status === 'processing').length}</p>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} whileHover={{ scale: 1.05, y: -5 }} className="bg-white rounded-2xl border-2 border-gray-100 p-5 hover:shadow-lg transition-all">
           <p className="text-sm text-gray-500">Total Revenue</p>
-          <p className="text-2xl font-bold text-green-600 mt-1">{formatPrice(orders.reduce((sum: number, o: Order) => sum + o.total, 0))}</p>
+          <p className="text-2xl font-bold text-green-600 mt-1">{formatPrice(orders.reduce((sum: number, o: Order) => sum + (o.total || 0), 0))}</p>
         </motion.div>
       </div>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-2xl border-2 border-gray-100 overflow-hidden hover:shadow-lg transition-all">
-        <div className="p-6 border-b border-gray-100">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-            <ShoppingCart className="h-5 w-5 text-pink-500" /> All Orders
+            <ShoppingCart className="h-5 w-5 text-pink-500" /> All Orders ({orders.length})
           </h3>
+          <button onClick={onRefresh} className="text-xs text-pink-600 hover:text-pink-700 font-medium border border-pink-200 px-3 py-1.5 rounded-lg hover:bg-pink-50 transition-all">
+            Refresh Orders
+          </button>
         </div>
         {orders.length === 0 ? (
           <div className="text-center py-12">
             <ShoppingCart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h4 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h4>
-            <p className="text-gray-500">Orders will appear here when customers place orders through your store.</p>
+            <p className="text-gray-500">Orders will appear here when customers place orders through your store via Paystack or Cash on Delivery.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Order Ref / ID</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Customer</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Date</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Items</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Payment</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Total</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
                   <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -581,21 +655,37 @@ function OrdersSection() {
               <tbody className="divide-y divide-gray-50">
                 {orders.map((order: Order) => (
                   <motion.tr key={order.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ backgroundColor: '#fafafa' }}>
-                    <td className="px-4 py-3"><span className="text-sm font-medium text-gray-900">{order.id}</span></td>
+                    <td className="px-4 py-3">
+                      <span className="text-xs font-mono font-medium text-gray-900">{order.paymentReference || order.id.slice(0, 8)}</span>
+                    </td>
                     <td className="px-4 py-3">
                       <div>
                         <p className="text-sm font-medium text-gray-900">{order.customerName}</p>
-                        <p className="text-xs text-gray-500">{order.customerEmail}</p>
+                        <p className="text-xs text-gray-500">{order.customerPhone || order.customerEmail}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">{order.date}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 hidden sm:table-cell">{order.items.length} item{order.items.length > 1 ? 's' : ''}</td>
+                    <td className="px-4 py-3 text-xs text-gray-600 hidden md:table-cell">{order.date}</td>
+                    <td className="px-4 py-3 hidden sm:table-cell">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${order.paymentMethod === 'Paystack' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                        {order.paymentMethod || 'Paystack'}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatPrice(order.total)}</td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium border ${getStatusColor(order.status)}`}>{order.status}</span>
+                      <select
+                        value={order.status || 'pending'}
+                        onChange={(e) => handleStatusChange(order.id, e.target.value as Order['status'])}
+                        className={`text-xs px-2 py-1 rounded-lg font-medium border focus:outline-none cursor-pointer ${getStatusColor(order.status)}`}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-end">
+                      <div className="flex items-center justify-end gap-2">
                         <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedOrder(order)} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-pink-600 hover:bg-pink-50 rounded-lg transition-colors">
                           <Eye className="h-3.5 w-3.5" /> View
                         </motion.button>
@@ -614,16 +704,17 @@ function OrdersSection() {
         {selectedOrder && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedOrder(null)}>
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-              <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900">Order {selectedOrder.id}</h2>
-                  <p className="text-sm text-gray-500">Placed on {selectedOrder.date}</p>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border-b border-gray-100">
+                <div className="mb-3 sm:mb-0">
+                  <h2 className="text-base sm:text-lg font-bold text-gray-900">Order Details</h2>
+                  <p className="text-xs sm:text-sm font-mono text-pink-600 break-all">Ref: {selectedOrder.paymentReference || selectedOrder.id}</p>
+                  <p className="text-xs text-gray-500">Placed on {selectedOrder.date}</p>
                 </div>
-                <motion.button whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedOrder(null)} className="text-gray-400 hover:text-gray-600">
+                <motion.button whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedOrder(null)} className="text-gray-400 hover:text-gray-600 absolute top-4 right-4 sm:static">
                   <X className="h-5 w-5" />
                 </motion.button>
               </div>
-              <div className="p-6 space-y-6">
+              <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                     <Mail className="h-4 w-4 text-pink-500" /> Customer Information
@@ -633,17 +724,19 @@ function OrdersSection() {
                     <p className="text-gray-700 flex items-center gap-2"><Mail className="h-3.5 w-3.5 text-gray-400" /> {selectedOrder.customerEmail}</p>
                     <p className="text-gray-700 flex items-center gap-2"><Phone className="h-3.5 w-3.5 text-gray-400" /> {selectedOrder.customerPhone}</p>
                     <p className="text-gray-700 flex items-start gap-2"><MapPin className="h-3.5 w-3.5 text-gray-400 mt-0.5" /> {selectedOrder.customerAddress}</p>
+                    {selectedOrder.notes && <p className="text-gray-700"><span className="font-medium">Notes:</span> {selectedOrder.notes}</p>}
                   </div>
                 </div>
+
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Package className="h-4 w-4 text-pink-500" /> Products Ordered
+                    <Package className="h-4 w-4 text-pink-500" /> Products Ordered ({selectedOrder.items?.length || 0})
                   </h3>
                   <div className="space-y-3">
-                    {selectedOrder.items.map((item, index) => (
-                      <div key={index} className="flex items-center gap-4 p-3 bg-white border border-gray-100 rounded-xl">
-                        <img src={item.image} alt={item.productName} className="w-16 h-16 rounded-lg object-cover" />
-                        <div className="flex-1 min-w-0">
+                    {selectedOrder.items?.map((item, index) => (
+                      <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 bg-white border border-gray-100 rounded-xl">
+                        {item.image && <img src={item.image} alt={item.productName} className="w-full sm:w-16 h-32 sm:h-16 rounded-lg object-cover" />}
+                        <div className="flex-1 min-w-0 w-full">
                           <p className="font-medium text-gray-900 text-sm">{item.productName}</p>
                           <div className="flex flex-wrap gap-2 mt-1">
                             {item.size && <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Size: {item.size}</span>}
@@ -651,24 +744,29 @@ function OrdersSection() {
                             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Qty: {item.quantity}</span>
                           </div>
                         </div>
-                        <p className="font-medium text-gray-900 text-sm">{formatPrice(item.price * item.quantity)}</p>
+                        <p className="font-medium text-gray-900 text-sm self-end sm:self-auto">{formatPrice(item.price * item.quantity)}</p>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="border-t border-gray-100 pt-4">
+
+                <div className="border-t border-gray-100 pt-4 space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-900">Order Total</span>
-                    <span className="text-xl font-bold text-pink-500">{formatPrice(selectedOrder.total)}</span>
+                    <span className="font-semibold text-gray-900">Payment Method</span>
+                    <span className="font-medium text-sm text-gray-700">{selectedOrder.paymentMethod || 'Paystack'}</span>
                   </div>
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="text-sm text-gray-500">Status:</span>
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium border ${getStatusColor(selectedOrder.status)}`}>{selectedOrder.status}</span>
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-gray-900">Payment Reference</span>
+                    <span className="font-mono text-xs text-pink-600 font-bold">{selectedOrder.paymentReference || 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="font-semibold text-gray-900 text-lg">Order Total</span>
+                    <span className="text-xl font-bold text-pink-500">{formatPrice(selectedOrder.total)}</span>
                   </div>
                 </div>
               </div>
-              <div className="p-6 border-t border-gray-100">
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedOrder(null)} className="w-full px-4 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
+              <div className="p-4 sm:p-6 border-t border-gray-100 flex gap-3">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedOrder(null)} className="w-full px-4 py-2.5 sm:py-3 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
                   Close
                 </motion.button>
               </div>
@@ -745,17 +843,17 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
         {selectedProduct && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedProduct(null)}>
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl">
-              <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h2>
-                  <p className="text-sm text-gray-500 mt-1">Product ID: {selectedProduct.id}</p>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border-b border-gray-100">
+                <div className="mb-3 sm:mb-0 pr-8 sm:pr-0">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">{selectedProduct.name}</h2>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1 break-all">Product ID: {selectedProduct.id}</p>
                 </div>
-                <motion.button whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedProduct(null)} className="text-gray-400 hover:text-gray-600">
+                <motion.button whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }} onClick={() => setSelectedProduct(null)} className="text-gray-400 hover:text-gray-600 absolute top-4 right-4 sm:static">
                   <X className="h-5 w-5" />
                 </motion.button>
               </div>
               
-              <div className="p-6 space-y-6">
+              <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                 {/* Product Images */}
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
@@ -842,11 +940,11 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
                 </div>
               </div>
 
-              <div className="p-6 border-t border-gray-100 flex gap-3">
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => { setSelectedProduct(null); onEdit(selectedProduct); }} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+              <div className="p-4 sm:p-6 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => { setSelectedProduct(null); onEdit(selectedProduct); }} className="flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
                   <Edit className="h-4 w-4" /> Edit Product
                 </motion.button>
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedProduct(null)} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedProduct(null)} className="flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
                   Close
                 </motion.button>
               </div>

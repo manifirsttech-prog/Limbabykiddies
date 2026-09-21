@@ -32,32 +32,12 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function DocumentTitle() {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    const titles: Record<string, string> = {
-      '/': 'Limbaby kiddies — Baby & Kids Products | Little Things, Big Smiles',
-      '/products': 'Shop Baby & Kids Products | Limbaby kiddies',
-      '/cart': 'Shopping Cart | Limbaby kiddies',
-      '/about': 'About Us | Limbaby kiddies — Our Story & Mission',
-      '/contact': 'Contact Us | Limbaby kiddies — Get in Touch',
-      '/admin/login': 'Admin Login | Limbaby kiddies',
-      '/admin/dashboard': 'Admin Dashboard | Limbaby kiddies',
-      '/admin/dashboard/orders': 'Order Management | Limbaby kiddies Admin',
-      '/admin/dashboard/products': 'Product Management | Limbaby kiddies Admin',
-    };
-    document.title = titles[pathname] || 'Limbaby kiddies — Baby & Kids Products';
-  }, [pathname]);
-  return null;
-}
-
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
           <ScrollToTop />
-          <DocumentTitle />
           <Routes>
             <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
             <Route path="/products" element={<PublicLayout><ProductsPage /></PublicLayout>} />

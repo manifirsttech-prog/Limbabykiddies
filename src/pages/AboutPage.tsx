@@ -6,10 +6,17 @@ import { FaHandsHelping } from 'react-icons/fa';
 import { BsEmojiSmile } from 'react-icons/bs';
 import AnimatedSection from '../components/AnimatedSection';
 import StaggerContainer, { StaggerItem } from '../components/StaggerContainer';
+import SEO from '../components/SEO/SEO';
 
 export default function AboutPage() {
   return (
     <main>
+      <SEO 
+        title="About Us | Limbaby Kiddies — Our Story & Mission"
+        description="Learn about Limbaby Kiddies, Nigeria's trusted online store for safe, high-quality baby products, clothing, toys, and kids accessories."
+        keywords="about Limbaby Kiddies, baby store Nigeria, quality kids store Lagos, trusted baby brand"
+        canonical="/about"
+      />
       <section className="bg-gradient-to-br from-pink-50 to-purple-50 py-16 md:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>

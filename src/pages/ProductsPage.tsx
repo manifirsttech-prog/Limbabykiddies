@@ -2,13 +2,14 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiSearch } from 'react-icons/fi';
 import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad, FaTh } from 'react-icons/fa';
+import { FaBottleWater } from 'react-icons/fa6';
 import ProductCard from '../components/ProductCard';
 import AnimatedSection from '../components/AnimatedSection';
 import { getAllProducts } from '../lib/firestore';
 import { Product, ProductCategory } from '../types/product';
 
 const categories: (ProductCategory | 'All')[] = [
-  'All', 'Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Others', 'Toys',
+  'All', 'Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Toys', 'Water Bottle', 'Others',
 ];
 
 const categoryIcons: Record<string, React.ElementType> = {
@@ -17,9 +18,12 @@ const categoryIcons: Record<string, React.ElementType> = {
   Shoes: FaShoePrints,
   'School Bags': FaGraduationCap,
   Bicycles: FaBicycle,
-  'Others': FaBaby,
   Toys: FaGamepad,
+  'Water Bottle': FaBottleWater,
+  Others: FaBaby,
 };
+
+import SEO from '../components/SEO/SEO';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -77,8 +81,32 @@ export default function ProductsPage() {
     );
   }
 
+  const pageTitle = selectedCategory === 'All' 
+    ? "Shop Baby & Kids Products | Limbaby Kiddies Nigeria" 
+    : `Shop ${selectedCategory} for Babies & Kids | Limbaby Kiddies`;
+
+  const pageDescription = selectedCategory === 'All'
+    ? "Explore our complete collection of premium baby clothing, shoes, toys, school bags, bicycles, water bottles, and accessories at Limbaby Kiddies."
+    : `Discover high-quality ${selectedCategory} for children and babies at Limbaby Kiddies. Safe, durable, and stylish products with fast delivery in Nigeria.`;
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://limbabykiddies.com' },
+      { '@type': 'ListItem', 'position': 2, 'name': 'Products', 'item': 'https://limbabykiddies.com/products' }
+    ]
+  };
+
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <SEO 
+        title={pageTitle}
+        description={pageDescription}
+        keywords="baby products, kids clothing, baby shoes, children toys, school bags, kids bicycles, water bottles, Nigeria e-commerce"
+        canonical="/products"
+        jsonLd={breadcrumbJsonLd}
+      />
       <AnimatedSection className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Our Products</h1>
         <p className="mt-2 text-gray-600">Discover quality products for every stage of your child's journey</p>

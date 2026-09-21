@@ -1,28 +1,164 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiCreditCard, FiCheckCircle, FiUser, FiMail, FiPhone, FiHome, FiFileText } from 'react-icons/fi';
-import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiCreditCard, FiCheckCircle, FiUser, FiMail, FiPhone, FiHome, FiFileText, FiLock } from 'react-icons/fi';
+import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FaBottleWater } from 'react-icons/fa6';
 import { useCart } from '../context/CartContext';
 import AnimatedSection from '../components/AnimatedSection';
 import { formatPrice } from '../lib/utils';
+import SEO from '../components/SEO/SEO';
+import { createOrder, reduceMultipleProductsStock } from '../lib/firestore';
 
 const categoryIcons: Record<string, React.ElementType> = {
-  Clothing: FaTshirt, Shoes: FaShoePrints, 'School Bags': FaGraduationCap,
-  Bicycles: FaBicycle, 'Car Seats': FaCar, 'Baby Accessories': FaBaby, Toys: FaGamepad,
+  Clothing: FaTshirt,
+  Shoes: FaShoePrints,
+  'School Bags': FaGraduationCap,
+  Bicycles: FaBicycle,
+  Toys: FaGamepad,
+  'Water Bottle': FaBottleWater,
+  Others: FaBaby,
+};
+
+// Dynamically load Paystack script
+const loadPaystackScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if ((window as any).PaystackPop) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://js.paystack.co/v1/inline.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
 };
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [placedOrderRef, setPlacedOrderRef] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethod] = useState<'paystack'>('paystack');
   const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', phone: '', address: '', city: '', notes: '' });
 
   const orderTotal = totalPrice;
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  const handlePaystackPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    setOrderPlaced(true);
-    clearCart();
+    setIsProcessing(true);
+
+    try {
+      // Check if all items have sufficient stock
+      const outOfStockItems = items.filter(item => item.product.stock < item.quantity);
+      if (outOfStockItems.length > 0) {
+        const itemNames = outOfStockItems.map(item => item.product.name).join(', ');
+        alert(`Some items are out of stock or have insufficient quantity: ${itemNames}. Please update your cart.`);
+        setIsProcessing(false);
+        return;
+      }
+
+      const loaded = await loadPaystackScript();
+      if (!loaded) {
+        alert('Failed to load Paystack payment gateway. Please check your internet connection.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+      
+      if (!paystackKey) {
+        alert('Payment configuration error. Please contact support.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const reference = 'LBK-ORD-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
+      // Define callback function separately to avoid inline async issues
+      const handlePaymentSuccess = async (response: any) => {
+        try {
+          const ref = response.reference || response.trxref || reference;
+          const newOrderData = {
+            customerName: customerInfo.name,
+            customerEmail: customerInfo.email,
+            customerPhone: customerInfo.phone,
+            customerAddress: `${customerInfo.address}, ${customerInfo.city}`,
+            city: customerInfo.city,
+            notes: customerInfo.notes,
+            items: items.map(item => ({
+              productId: item.product.id,
+              productName: item.product.name,
+              quantity: item.quantity,
+              price: item.product.price,
+              image: item.product.images[0] || '',
+              size: item.selectedSize || '',
+              color: item.selectedColor || ''
+            })),
+            total: orderTotal,
+            status: 'pending' as const,
+            paymentMethod: 'Paystack' as const,
+            paymentReference: ref,
+            paymentStatus: 'paid' as const,
+            date: new Date().toLocaleDateString('en-US', { 
+              year: 'numeric', month: 'short', day: 'numeric', 
+              hour: '2-digit', minute: '2-digit' 
+            })
+          };
+
+          // Save order to Firestore
+          await createOrder(newOrderData);
+          
+          // Reduce stock for all ordered products
+          const stockItems = items.map(item => ({
+            productId: item.product.id,
+            quantity: item.quantity
+          }));
+          await reduceMultipleProductsStock(stockItems);
+          
+          setPlacedOrderRef(ref);
+          setOrderPlaced(true);
+          clearCart();
+        } catch (err) {
+          console.error('Error saving order:', err);
+          alert('Payment succeeded via Paystack! Reference: ' + (response.reference || reference));
+          setPlacedOrderRef(response.reference || reference);
+          setOrderPlaced(true);
+          clearCart();
+        } finally {
+          setIsProcessing(false);
+        }
+      };
+
+      const handler = (window as any).PaystackPop.setup({
+        key: paystackKey,
+        email: customerInfo.email,
+        amount: Math.round(orderTotal * 100), // Paystack expects amount in Kobo
+        currency: 'NGN',
+        ref: reference,
+        metadata: {
+          custom_fields: [
+            { display_name: "Customer Name", variable_name: "customer_name", value: customerInfo.name },
+            { display_name: "Phone Number", variable_name: "phone_number", value: customerInfo.phone },
+            { display_name: "Delivery Address", variable_name: "delivery_address", value: `${customerInfo.address}, ${customerInfo.city}` }
+          ]
+        },
+        onClose: function() {
+          setIsProcessing(false);
+        },
+        callback: function(response: any) {
+          handlePaymentSuccess(response);
+        }
+      });
+
+      handler.openIframe();
+    } catch (error: any) {
+      console.error('Error placing order:', error);
+      alert('Failed to place order: ' + (error.message || 'Unknown error'));
+      setIsProcessing(false);
+    }
   };
 
   if (orderPlaced) {
@@ -32,7 +168,13 @@ export default function CartPage() {
           <FiCheckCircle className="h-10 w-10 text-green-500" />
         </motion.div>
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Order Placed Successfully!</h1>
-        <p className="text-gray-600 mb-8">Thank you for your order! We'll send you a confirmation email shortly with tracking details.</p>
+        <p className="text-gray-600 mb-2">Thank you for shopping with Limbaby Kiddies! Your order has been received and saved to our system.</p>
+        {placedOrderRef && (
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 max-w-sm mx-auto my-4 text-sm font-mono text-gray-700">
+            Payment Ref / Order ID: <span className="font-bold text-pink-600">{placedOrderRef}</span>
+          </div>
+        )}
+        <p className="text-sm text-gray-500 mb-8">We will contact you shortly on your provided phone number with delivery updates.</p>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Link to="/products" className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-lg">
             Continue Shopping <FiShoppingBag className="h-4 w-4" />
@@ -59,6 +201,12 @@ export default function CartPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <SEO 
+        title="Shopping Cart | Limbaby Kiddies"
+        description="Review items in your Limbaby Kiddies shopping cart and proceed to checkout for baby and kids products in Nigeria."
+        canonical="/cart"
+        noindex={true}
+      />
       <AnimatedSection>
         <h1 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
           <FiShoppingBag className="h-7 w-7 text-pink-500" />
@@ -93,6 +241,21 @@ export default function CartPage() {
                         {item.selectedSize && <span>• Size: {item.selectedSize}</span>}
                         {item.selectedColor && <span>• Color: {item.selectedColor}</span>}
                       </p>
+                      {item.product.stock < 10 && item.product.stock > 0 && (
+                        <p className="text-xs text-orange-600 font-medium mt-1">
+                          ⚠️ Only {item.product.stock} left in stock
+                        </p>
+                      )}
+                      {item.product.stock === 0 && (
+                        <p className="text-xs text-red-600 font-bold mt-1">
+                          ❌ Out of Stock
+                        </p>
+                      )}
+                      {item.quantity > item.product.stock && item.product.stock > 0 && (
+                        <p className="text-xs text-red-600 font-bold mt-1">
+                          ⚠️ Only {item.product.stock} available (you have {item.quantity} in cart)
+                        </p>
+                      )}
                       <p className="font-bold text-pink-500 mt-1 text-lg">{formatPrice(item.product.price)}</p>
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center gap-2">
@@ -105,9 +268,11 @@ export default function CartPage() {
                             {item.quantity}
                           </motion.span>
                           <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-                            onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                            className="w-8 h-8 flex items-center justify-center border-2 border-gray-200 rounded-lg hover:bg-gray-50"
+                            onClick={() => updateQuantity(item.product.id, Math.min(item.product.stock, item.quantity + 1))}
+                            disabled={item.quantity >= item.product.stock}
+                            className="w-8 h-8 flex items-center justify-center border-2 border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                             aria-label="Increase quantity"
+                            title={item.quantity >= item.product.stock ? 'Max stock reached' : 'Increase quantity'}
                           ><FiPlus className="h-3 w-3" /></motion.button>
                         </div>
                         <motion.button whileHover={{ scale: 1.1, rotate: 10 }} whileTap={{ scale: 0.9 }}
@@ -136,7 +301,7 @@ export default function CartPage() {
               </div>
             </div>
 
-            <form onSubmit={handlePlaceOrder} className="mt-6 space-y-3">
+            <form onSubmit={handlePaystackPayment} className="mt-6 space-y-3">
               <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2"><FiUser className="h-4 w-4 text-pink-500" /> Customer Information</h3>
               <div className="relative">
                 <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -157,13 +322,14 @@ export default function CartPage() {
               <input type="text" placeholder="City" required value={customerInfo.city} onChange={(e) => setCustomerInfo({ ...customerInfo, city: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 transition-all" />
               <textarea placeholder="Order notes (optional)" rows={2} value={customerInfo.notes} onChange={(e) => setCustomerInfo({ ...customerInfo, notes: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 resize-none transition-all" />
 
-              <div className="border-t-2 border-gray-100 pt-4 mt-4">
-                <div className="flex items-center gap-2 text-sm text-gray-600 mb-4"><FiCreditCard className="h-4 w-4 text-pink-500" /> Payment: Cash on Delivery (Mock)</div>
+              <div className="pt-2">
+                <motion.button type="submit" disabled={isProcessing} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                  className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-pink-200 text-base flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <FiLock className="h-4 w-4" />
+                  {isProcessing ? 'Processing Order...' : `Pay with Paystack — ${formatPrice(orderTotal)}`}
+                </motion.button>
               </div>
-
-              <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-pink-200 text-lg"
-              >Place Order — {formatPrice(orderTotal)}</motion.button>
             </form>
           </motion.div>
         </aside>
@@ -171,3 +337,4 @@ export default function CartPage() {
     </main>
   );
 }
+

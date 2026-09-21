@@ -1,19 +1,24 @@
 import { Cloudinary } from '@cloudinary/url-gen';
 
+const getCloudName = () => import.meta.env.CLOUDINARY_CLOUD_NAME || import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "pxz965s7";
+const getApiKey = () => import.meta.env.CLOUDINARY_API_KEY || import.meta.env.VITE_CLOUDINARY_API_KEY || "517622224319167";
+const getApiSecret = () => import.meta.env.CLOUDINARY_API_SECRET || import.meta.env.VITE_CLOUDINARY_API_SECRET || "tdhwQ-_lwCifLR8imWLS3iWdg7M";
+const getUploadPreset = () => import.meta.env.CLOUDINARY_UPLOAD_PRESET || import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "Lim baby";
+
 // Initialize Cloudinary with your cloud name
 export const cld = new Cloudinary({
   cloud: {
-    cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+    cloudName: getCloudName()
   }
 });
 
 // Cloudinary configuration
 export const CLOUDINARY_CONFIG = {
-  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
-  apiKey: import.meta.env.VITE_CLOUDINARY_API_KEY,
-  apiSecret: import.meta.env.VITE_CLOUDINARY_API_SECRET,
-  uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
-  apiUrl: `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}`
+  get cloudName() { return getCloudName(); },
+  get apiKey() { return getApiKey(); },
+  get apiSecret() { return getApiSecret(); },
+  get uploadPreset() { return getUploadPreset(); },
+  get apiUrl() { return `https://api.cloudinary.com/v1_1/${getCloudName()}`; }
 };
 
 // Upload function for images

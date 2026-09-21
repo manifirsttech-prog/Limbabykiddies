@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiLock, FiMail } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
+import SEO from '../components/SEO/SEO';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -43,6 +44,7 @@ export default function AdminLoginPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center px-4">
+      <SEO title="Admin Login | Limbaby Kiddies" noindex={true} />
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-md">
         <div className="text-center mb-8">
           <motion.div animate={{ rotate: [0, -5, 5, 0] }} transition={{ duration: 2, repeat: Infinity }} className="inline-flex items-center gap-2 mb-4">

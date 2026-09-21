@@ -20,8 +20,9 @@ export type ProductCategory =
   | 'Shoes'
   | 'School Bags'
   | 'Bicycles'
-  | 'Others'
-  | 'Toys';
+  | 'Toys'
+  | 'Water Bottle'
+  | 'Others';
 
 export interface CartItem {
   product: Product;

@@ -12,8 +12,10 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { Product, ProductCategory } from '../types/product';
+import { Order } from '../types/order';
 
 const PRODUCTS_COLLECTION = 'products';
+const ORDERS_COLLECTION = 'orders';
 
 // Helper function to remove undefined values from object
 const removeUndefined = (obj: any): any => {
@@ -216,3 +218,109 @@ export const deleteProduct = async (productId: string): Promise<void> => {
     throw error;
   }
 };
+
+// --- ORDER FUNCTIONS ---
+
+// Add new order
+export const createOrder = async (orderData: Omit<Order, 'id'>): Promise<string> => {
+  try {
+    const cleanOrder = removeUndefined(orderData);
+    const docRef = await addDoc(collection(db, ORDERS_COLLECTION), {
+      ...cleanOrder,
+      createdAt: new Date().toISOString()
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error('Error creating order:', error);
+    throw error;
+  }
+};
+
+// Fetch all orders
+export const getAllOrders = async (): Promise<Order[]> => {
+  try {
+    const querySnapshot = await getDocs(collection(db, ORDERS_COLLECTION));
+    const orders: Order[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      orders.push({
+        id: doc.id,
+        ...doc.data()
+      } as Order);
+    });
+
+    // Sort by newest date first
+    orders.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
+    
+    return orders;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw error;
+  }
+};
+
+// Update order status
+export const updateOrderStatus = async (orderId: string, status: Order['status']): Promise<void> => {
+  try {
+    const orderRef = doc(db, ORDERS_COLLECTION, orderId);
+    await updateDoc(orderRef, { status });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw error;
+  }
+};
+
+// Delete order
+export const deleteOrder = async (orderId: string): Promise<void> => {
+  try {
+    const orderRef = doc(db, ORDERS_COLLECTION, orderId);
+    await deleteDoc(orderRef);
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    throw error;
+  }
+};
+
+// Reduce product stock after successful order
+export const reduceProductStock = async (productId: string, quantityOrdered: number): Promise<void> => {
+  try {
+    const productRef = doc(db, PRODUCTS_COLLECTION, productId);
+    const productSnap = await getDoc(productRef);
+    
+    if (!productSnap.exists()) {
+      console.error(`Product ${productId} not found`);
+      return;
+    }
+    
+    const currentStock = productSnap.data().stock || 0;
+    const newStock = Math.max(0, currentStock - quantityOrdered);
+    
+    // Update stock
+    await updateDoc(productRef, { 
+      stock: newStock,
+      // If stock reaches 0, mark as out-of-stock
+      status: newStock === 0 ? 'out-of-stock' : productSnap.data().status
+    });
+    
+    console.log(`✅ Stock updated for product ${productId}: ${currentStock} → ${newStock}`);
+  } catch (error) {
+    console.error('Error reducing product stock:', error);
+    throw error;
+  }
+};
+
+// Reduce stock for multiple products (for orders with multiple items)
+export const reduceMultipleProductsStock = async (items: Array<{ productId: string; quantity: number }>): Promise<void> => {
+  try {
+    const stockUpdatePromises = items.map(item => 
+      reduceProductStock(item.productId, item.quantity)
+    );
+    
+    await Promise.all(stockUpdatePromises);
+    console.log('✅ All product stocks updated successfully');
+  } catch (error) {
+    console.error('Error reducing multiple products stock:', error);
+    throw error;
+  }
+};
+

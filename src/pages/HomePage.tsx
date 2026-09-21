@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FiArrowRight, FiTruck, FiShield, FiStar } from 'react-icons/fi';
 import { GiHeartBeats } from 'react-icons/gi';
 import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FaBottleWater } from 'react-icons/fa6';
 import AnimatedSection from '../components/AnimatedSection';
 import StaggerContainer, { StaggerItem } from '../components/StaggerContainer';
 import ProductCard from '../components/ProductCard';
@@ -16,7 +17,44 @@ const categories = [
   { name: 'Toys', icon: FaGamepad, color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
   { name: 'School Bags', icon: FaGraduationCap, color: 'bg-green-50 text-green-700 border-green-200' },
   { name: 'Bicycles', icon: FaBicycle, color: 'bg-purple-50 text-purple-700 border-purple-200' },
+  { name: 'Water Bottle', icon: FaBottleWater, color: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
   { name: 'Others', icon: FaBaby, color: 'bg-orange-50 text-orange-700 border-orange-200' },
+];
+
+import SEO from '../components/SEO/SEO';
+
+const homeJsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': 'Limbaby Kiddies',
+    'url': 'https://limbabykiddies.com',
+    'logo': 'https://limbabykiddies.com/logo.png',
+    'description': 'Premium baby and kids products store in Nigeria offering clothing, shoes, toys, school bags, bicycles, water bottles, and baby accessories.',
+    'contactPoint': {
+      '@type': 'ContactPoint',
+      'telephone': '+2349048298906',
+      'contactType': 'customer service',
+      'email': 'adelekelollipop@gmail.com'
+    },
+    'address': {
+      '@type': 'PostalAddress',
+      'streetAddress': 'Orchid Road, Lekki',
+      'addressLocality': 'Lagos',
+      'addressCountry': 'NG'
+    }
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    'name': 'Limbaby Kiddies',
+    'url': 'https://limbabykiddies.com',
+    'potentialAction': {
+      '@type': 'SearchAction',
+      'target': 'https://limbabykiddies.com/products?search={search_term_string}',
+      'query-input': 'required name=search_term_string'
+    }
+  }
 ];
 
 export default function HomePage() {
@@ -56,6 +94,13 @@ export default function HomePage() {
 
   return (
     <main>
+      <SEO 
+        title="Limbaby Kiddies | Baby & Kids Products in Nigeria"
+        description="Shop quality baby and kids clothing, shoes, toys, school bags, bicycles, water bottles and accessories at Limbaby Kiddies in Nigeria. Quality products for happy children."
+        keywords="baby products Nigeria, kids clothing Nigeria, baby shoes Nigeria, toys Nigeria, school bags kids Nigeria, bicycles kids Nigeria, baby accessories Lagos"
+        canonical="/"
+        jsonLd={homeJsonLd}
+      />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-pink-50 via-white to-purple-50 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-32 relative">

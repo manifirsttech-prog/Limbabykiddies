@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiShoppingCart, FiEye, FiStar } from 'react-icons/fi';
 import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FaBottleWater } from 'react-icons/fa6';
 import { Product } from '../types/product';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../lib/utils';
@@ -16,18 +17,22 @@ const categoryIcons: Record<string, React.ElementType> = {
   Shoes: FaShoePrints,
   'School Bags': FaGraduationCap,
   Bicycles: FaBicycle,
-  'Others': FaBaby,
   Toys: FaGamepad,
+  'Water Bottle': FaBottleWater,
+  Others: FaBaby,
 };
 
 export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   const CategoryIcon = categoryIcons[product.category] || FaBaby;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     addToCart(product);
+    // Redirect to cart immediately
+    navigate('/cart');
   };
 
   return (
