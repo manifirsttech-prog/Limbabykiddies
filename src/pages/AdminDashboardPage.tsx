@@ -6,8 +6,7 @@ import {
   PackageCheck, AlertTriangle, TrendingUp, Plus, Edit, Trash2, X,
   BarChart3, ExternalLink, Eye, MapPin, Phone, Mail, Upload, Image as ImageIcon, Video
 } from 'lucide-react';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../lib/firebase';
+import { uploadImage, uploadVideo } from '../lib/cloudinary';
 import { getAllProducts, addProduct, updateProduct, deleteProduct } from '../lib/firestore';
 import { Product, ProductCategory } from '../types/product';
 import { formatPrice } from '../lib/utils';
@@ -139,22 +138,18 @@ export default function AdminDashboardPage() {
     const uploadedImages: string[] = [];
     let uploadedVideo: string | undefined;
 
-    // Upload images
+    // Upload images to Cloudinary
     if (imageFiles) {
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
-        const imageRef = ref(storage, `products/${Date.now()}_${file.name}`);
-        const snapshot = await uploadBytes(imageRef, file);
-        const url = await getDownloadURL(snapshot.ref);
+        const url = await uploadImage(file);
         uploadedImages.push(url);
       }
     }
 
-    // Upload video
+    // Upload video to Cloudinary
     if (videoFile) {
-      const videoRef = ref(storage, `products/${Date.now()}_${videoFile.name}`);
-      const snapshot = await uploadBytes(videoRef, videoFile);
-      uploadedVideo = await getDownloadURL(snapshot.ref);
+      uploadedVideo = await uploadVideo(videoFile);
     }
 
     return { images: uploadedImages, video: uploadedVideo };
