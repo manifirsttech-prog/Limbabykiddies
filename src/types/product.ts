@@ -20,7 +20,6 @@ export type ProductCategory =
   | 'Shoes'
   | 'School Bags'
   | 'Bicycles'
-  | 'Car Seats'
   | 'Baby Accessories'
   | 'Toys';
 

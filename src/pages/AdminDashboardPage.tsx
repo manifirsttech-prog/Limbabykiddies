@@ -77,7 +77,7 @@ const mockOrders: Order[] = [
   },
 ];
 
-const categories: ProductCategory[] = ['Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Car Seats', 'Baby Accessories', 'Toys'];
+const categories: ProductCategory[] = ['Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Baby Accessories', 'Toys'];
 
 export default function AdminDashboardPage() {
   const location = useLocation();

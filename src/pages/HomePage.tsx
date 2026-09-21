@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiTruck, FiShield, FiStar } from 'react-icons/fi';
 import { GiHeartBeats } from 'react-icons/gi';
-import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
 import AnimatedSection from '../components/AnimatedSection';
 import StaggerContainer, { StaggerItem } from '../components/StaggerContainer';
 import ProductCard from '../components/ProductCard';
@@ -16,7 +16,6 @@ const categories = [
   { name: 'Toys', icon: FaGamepad, color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
   { name: 'School Bags', icon: FaGraduationCap, color: 'bg-green-50 text-green-700 border-green-200' },
   { name: 'Bicycles', icon: FaBicycle, color: 'bg-purple-50 text-purple-700 border-purple-200' },
-  { name: 'Car Seats', icon: FaCar, color: 'bg-red-50 text-red-700 border-red-200' },
   { name: 'Baby Accessories', icon: FaBaby, color: 'bg-orange-50 text-orange-700 border-orange-200' },
 ];
 
@@ -137,8 +136,8 @@ export default function HomePage() {
               <motion.img
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=600&h=600&fit=crop"
-                alt="Happy baby with toys"
+                src="https://image.qwenlm.ai/generated-images/3ba78c32-2572-4bde-806f-3abb4a9a9cb8/_result.png"
+                alt="Happy baby playing with toys and kids products"
                 className="relative rounded-3xl shadow-2xl w-full max-w-md mx-auto object-cover aspect-square border-4 border-white"
               />
             </motion.div>

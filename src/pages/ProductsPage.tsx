@@ -1,14 +1,14 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiSearch } from 'react-icons/fi';
-import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad, FaTh } from 'react-icons/fa';
+import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad, FaTh } from 'react-icons/fa';
 import ProductCard from '../components/ProductCard';
 import AnimatedSection from '../components/AnimatedSection';
 import { getAllProducts } from '../lib/firestore';
 import { Product, ProductCategory } from '../types/product';
 
 const categories: (ProductCategory | 'All')[] = [
-  'All', 'Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Car Seats', 'Baby Accessories', 'Toys',
+  'All', 'Clothing', 'Shoes', 'School Bags', 'Bicycles', 'Baby Accessories', 'Toys',
 ];
 
 const categoryIcons: Record<string, React.ElementType> = {
@@ -17,7 +17,6 @@ const categoryIcons: Record<string, React.ElementType> = {
   Shoes: FaShoePrints,
   'School Bags': FaGraduationCap,
   Bicycles: FaBicycle,
-  'Car Seats': FaCar,
   'Baby Accessories': FaBaby,
   Toys: FaGamepad,
 };

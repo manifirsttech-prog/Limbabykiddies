@@ -78,6 +78,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Clothing</Link></li>
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Shoes</Link></li>
+              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">School Bags</Link></li>
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Toys</Link></li>
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Baby Accessories</Link></li>
             </ul>

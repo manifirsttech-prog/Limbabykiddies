@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiShoppingCart, FiTruck, FiShield, FiRotateCw, FiMinus, FiPlus, FiChevronRight, FiCheck } from 'react-icons/fi';
-import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
 import { getProductBySlug } from '../lib/firestore';
 import { useCart } from '../context/CartContext';
 import AnimatedSection from '../components/AnimatedSection';
@@ -11,7 +11,7 @@ import { Product } from '../types/product';
 
 const categoryIcons: Record<string, React.ElementType> = {
   Clothing: FaTshirt, Shoes: FaShoePrints, 'School Bags': FaGraduationCap,
-  Bicycles: FaBicycle, 'Car Seats': FaCar, 'Baby Accessories': FaBaby, Toys: FaGamepad,
+  Bicycles: FaBicycle, 'Baby Accessories': FaBaby, Toys: FaGamepad,
 };
 
 export default function ProductDetailPage() {

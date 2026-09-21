@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiShoppingCart, FiEye, FiStar } from 'react-icons/fi';
-import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
 import { Product } from '../types/product';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../lib/utils';
@@ -16,7 +16,6 @@ const categoryIcons: Record<string, React.ElementType> = {
   Shoes: FaShoePrints,
   'School Bags': FaGraduationCap,
   Bicycles: FaBicycle,
-  'Car Seats': FaCar,
   'Baby Accessories': FaBaby,
   Toys: FaGamepad,
 };
