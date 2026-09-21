@@ -67,7 +67,7 @@ export default function CartPage() {
         return;
       }
 
-      const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+      const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_live_bdd5eb29beac627ba31879c69475086b3b81b46d';
       
       if (!paystackKey) {
         alert('Payment configuration error. Please contact support.');
