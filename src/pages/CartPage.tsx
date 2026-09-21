@@ -201,10 +201,23 @@ export default function CartPage() {
         }
       });
 
-      handler.openIframe();
+      // Add small delay before opening to ensure handler is fully initialized
+      if (handler && typeof handler.openIframe === 'function') {
+        setTimeout(() => {
+          try {
+            handler.openIframe();
+          } catch (err) {
+            console.error('Error opening Paystack iframe:', err);
+            alert('Failed to open payment window. Please try again.');
+            setIsProcessing(false);
+          }
+        }, 100);
+      } else {
+        throw new Error('Paystack handler not properly initialized');
+      }
     } catch (error: any) {
       console.error('Error placing order:', error);
-      alert('Failed to place order: ' + (error.message || 'Unknown error'));
+      alert('Failed to initialize payment: ' + (error.message || 'Unknown error'));
       setIsProcessing(false);
     }
   };
