@@ -138,21 +138,32 @@ export default function AdminDashboardPage() {
     const uploadedImages: string[] = [];
     let uploadedVideo: string | undefined;
 
-    // Upload images to Cloudinary
-    if (imageFiles) {
-      for (let i = 0; i < imageFiles.length; i++) {
-        const file = imageFiles[i];
-        const url = await uploadImage(file);
-        uploadedImages.push(url);
+    try {
+      // Upload images to Cloudinary
+      if (imageFiles && imageFiles.length > 0) {
+        console.log(`Starting upload of ${imageFiles.length} image(s)...`);
+        for (let i = 0; i < imageFiles.length; i++) {
+          const file = imageFiles[i];
+          console.log(`Uploading image ${i + 1}/${imageFiles.length}: ${file.name}`);
+          const url = await uploadImage(file);
+          console.log(`Image ${i + 1} uploaded successfully:`, url);
+          uploadedImages.push(url);
+        }
       }
-    }
 
-    // Upload video to Cloudinary
-    if (videoFile) {
-      uploadedVideo = await uploadVideo(videoFile);
-    }
+      // Upload video to Cloudinary
+      if (videoFile) {
+        console.log('Starting video upload:', videoFile.name);
+        uploadedVideo = await uploadVideo(videoFile);
+        console.log('Video uploaded successfully:', uploadedVideo);
+      }
 
-    return { images: uploadedImages, video: uploadedVideo };
+      console.log('All files uploaded successfully');
+      return { images: uploadedImages, video: uploadedVideo };
+    } catch (error: any) {
+      console.error('Error in uploadFiles:', error);
+      throw new Error(`File upload failed: ${error.message || 'Unknown error'}`);
+    }
   };
 
   const openAddModal = () => {
@@ -178,7 +189,12 @@ export default function AdminDashboardPage() {
   const handleSave = async () => {
     setUploading(true);
     try {
+      console.log('Starting product save process...');
+      
+      // Upload files to Cloudinary
+      console.log('Uploading files to Cloudinary...');
       const { images, video } = await uploadFiles();
+      console.log('Files uploaded successfully:', { images, video });
 
       const productData = {
         name: formData.name,
@@ -196,6 +212,8 @@ export default function AdminDashboardPage() {
         bestSeller: editingProduct?.bestSeller || false,
       };
 
+      console.log('Saving product to Firestore...');
+      
       if (editingProduct) {
         // Update existing product in Firestore
         await updateProduct(editingProduct.id, productData);
@@ -216,11 +234,13 @@ export default function AdminDashboardPage() {
         setProductList((prev) => [...prev, newProduct]);
       }
       
+      console.log('Product saved successfully!');
       setShowModal(false);
       alert(editingProduct ? 'Product updated successfully!' : 'Product added successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving product:', error);
-      alert('Error saving product. Please try again.');
+      const errorMessage = error?.message || 'Unknown error occurred';
+      alert(`Error saving product: ${errorMessage}\n\nPlease check the browser console for more details.`);
     } finally {
       setUploading(false);
     }

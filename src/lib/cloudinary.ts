@@ -12,17 +12,21 @@ export const CLOUDINARY_CONFIG = {
   cloudName: 'pxz965s7',
   apiKey: '517622224319167',
   apiSecret: 'tdhwQ-_lwCifLR8imWLS3iWdg7M',
-  uploadPreset: 'Lim baby', // Upload preset from Cloudinary dashboard
+  uploadPreset: 'Lim_baby', // Upload preset from Cloudinary dashboard (no spaces)
   apiUrl: 'https://api.cloudinary.com/v1_1/pxz965s7'
 };
 
 // Upload function for images
 export const uploadImage = async (file: File): Promise<string> => {
+  console.log('Starting image upload:', file.name, 'Size:', file.size, 'bytes');
+  
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
   
   try {
+    console.log('Uploading to Cloudinary with preset:', CLOUDINARY_CONFIG.uploadPreset);
+    
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`,
       {
@@ -31,11 +35,16 @@ export const uploadImage = async (file: File): Promise<string> => {
       }
     );
     
+    console.log('Upload response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error('Upload failed');
+      const errorData = await response.json();
+      console.error('Cloudinary upload error:', errorData);
+      throw new Error(errorData.error?.message || `Upload failed with status ${response.status}`);
     }
     
     const data = await response.json();
+    console.log('Upload successful, URL:', data.secure_url);
     return data.secure_url;
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -45,12 +54,16 @@ export const uploadImage = async (file: File): Promise<string> => {
 
 // Upload function for videos
 export const uploadVideo = async (file: File): Promise<string> => {
+  console.log('Starting video upload:', file.name, 'Size:', file.size, 'bytes');
+  
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
   formData.append('resource_type', 'video');
   
   try {
+    console.log('Uploading video to Cloudinary with preset:', CLOUDINARY_CONFIG.uploadPreset);
+    
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/video/upload`,
       {
@@ -59,11 +72,16 @@ export const uploadVideo = async (file: File): Promise<string> => {
       }
     );
     
+    console.log('Video upload response status:', response.status);
+    
     if (!response.ok) {
-      throw new Error('Upload failed');
+      const errorData = await response.json();
+      console.error('Cloudinary video upload error:', errorData);
+      throw new Error(errorData.error?.message || `Video upload failed with status ${response.status}`);
     }
     
     const data = await response.json();
+    console.log('Video upload successful, URL:', data.secure_url);
     return data.secure_url;
   } catch (error) {
     console.error('Error uploading video:', error);
