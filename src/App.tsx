@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -16,9 +16,15 @@ import { useEffect } from 'react';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+  
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    // Only scroll to top on PUSH (forward navigation), not POP (back button)
+    if (navigationType !== 'POP') {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, navigationType]);
+  
   return null;
 }
 
@@ -34,7 +40,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true }}>
       <AuthProvider>
         <CartProvider>
           <ScrollToTop />
