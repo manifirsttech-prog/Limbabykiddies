@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiTrash2, FiMinus, FiPlus, FiShoppingBag, FiCreditCard, FiCheckCircle, FiUser, FiMail, FiPhone, FiHome, FiFileText, FiLock } from 'react-icons/fi';
@@ -43,6 +43,16 @@ export default function CartPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod] = useState<'paystack'>('paystack');
   const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', phone: '', address: '', city: '', notes: '' });
+
+  // Cleanup Paystack iframe on component unmount (fixes mobile back button issue)
+  useEffect(() => {
+    return () => {
+      const paystackFrame = document.querySelector('iframe[src*="paystack"]');
+      if (paystackFrame) {
+        paystackFrame.remove();
+      }
+    };
+  }, []);
 
   const orderTotal = totalPrice;
 
@@ -147,9 +157,21 @@ export default function CartPage() {
         },
         onClose: function() {
           setIsProcessing(false);
+          // Clean up Paystack iframe on mobile to prevent navigation blocking
+          const paystackFrame = document.querySelector('iframe[src*="paystack"]');
+          if (paystackFrame) {
+            paystackFrame.remove();
+          }
         },
         callback: function(response: any) {
           handlePaymentSuccess(response);
+          // Clean up Paystack iframe after successful payment
+          setTimeout(() => {
+            const paystackFrame = document.querySelector('iframe[src*="paystack"]');
+            if (paystackFrame) {
+              paystackFrame.remove();
+            }
+          }, 500);
         }
       });
 
