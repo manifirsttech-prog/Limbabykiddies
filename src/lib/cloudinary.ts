@@ -3,18 +3,17 @@ import { Cloudinary } from '@cloudinary/url-gen';
 // Initialize Cloudinary with your cloud name
 export const cld = new Cloudinary({
   cloud: {
-    cloudName: 'pxz965s7'
+    cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
   }
 });
 
 // Cloudinary configuration
 export const CLOUDINARY_CONFIG = {
-  cloudName: 'pxz965s7',
-  apiKey: '517622224319167',
-  apiSecret: 'tdhwQ-_lwCifLR8imWLS3iWdg7M',
-  uploadPreset: 'Lim baby', // Upload preset from Cloudinary dashboard
-  uploadPresetId: '99d6fe68-9c4d-4e96-a463-2a7926534f9d',
-  apiUrl: 'https://api.cloudinary.com/v1_1/pxz965s7'
+  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
+  apiKey: import.meta.env.VITE_CLOUDINARY_API_KEY,
+  apiSecret: import.meta.env.VITE_CLOUDINARY_API_SECRET,
+  uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+  apiUrl: `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}`
 };
 
 // Upload function for images

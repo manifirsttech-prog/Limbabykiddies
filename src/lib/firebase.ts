@@ -4,14 +4,14 @@ import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCbOXPNgjzC3jEqWuEBzQTrTwxX9w4Czew",
-  authDomain: "limbabykiddies.firebaseapp.com",
-  databaseURL: "https://limbabykiddies-default-rtdb.firebaseio.com",
-  projectId: "limbabykiddies",
-  storageBucket: "limbabykiddies.firebasestorage.app",
-  messagingSenderId: "939154494485",
-  appId: "1:939154494485:web:ecaa659342fb8092b9ea1c",
-  measurementId: "G-YQ4G93XD14"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: `https://${import.meta.env.VITE_FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com`,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
