@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiShoppingCart, FiMenu, FiX, FiSearch, FiHome, FiShoppingBag, FiInfo, FiPhone } from 'react-icons/fi';
-import { GiBabyBottle } from 'react-icons/gi';
 import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
@@ -22,16 +21,20 @@ export default function Navbar() {
   return (
     <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-pink-100">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-3 group">
             <motion.div
-              whileHover={{ rotate: [0, -10, 10, 0] }}
-              transition={{ duration: 0.5 }}
+              whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+              transition={{ duration: 0.4 }}
             >
-              <GiBabyBottle className="h-8 w-8 text-pink-500" />
+              <img 
+                src="/logo.png" 
+                alt="Limbaby Kiddies Logo" 
+                className="h-12 w-12 md:h-14 md:w-14 object-contain rounded-full border-2 border-pink-300 shadow-md transition-shadow group-hover:shadow-pink-200/60" 
+              />
             </motion.div>
-            <span className="text-xl font-bold text-gray-900">
+            <span className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
               Limbaby <span className="text-pink-500">kiddies</span>
             </span>
           </Link>

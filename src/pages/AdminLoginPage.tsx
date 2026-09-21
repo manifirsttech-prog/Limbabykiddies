@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiLock, FiMail } from 'react-icons/fi';
-import { GiBabyBottle } from 'react-icons/gi';
 import { useAuth } from '../context/AuthContext';
 
 export default function AdminLoginPage() {
@@ -47,7 +46,7 @@ export default function AdminLoginPage() {
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-md">
         <div className="text-center mb-8">
           <motion.div animate={{ rotate: [0, -5, 5, 0] }} transition={{ duration: 2, repeat: Infinity }} className="inline-flex items-center gap-2 mb-4">
-            <GiBabyBottle className="h-8 w-8 text-pink-500" />
+            <img src="/logo.png" alt="Limbaby Kiddies Logo" className="h-10 w-10 object-contain rounded-full border-2 border-pink-300 shadow-sm" />
             <span className="text-xl font-bold text-gray-900">Limbaby <span className="text-pink-500">kiddies</span></span>
           </motion.div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Login</h1>

@@ -15,8 +15,7 @@ export default function AboutPage() {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Our Story</h1>
             <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
-              Limbaby kiddies was born from a simple belief: every child deserves products that are safe,
-              beautiful, and made with love. We're here to support parents on their most important journey.
+              Limbaby Kiddies was created with one simple belief: every child deserves safe, quality products made with love. We’re here to make parenting easier by providing beautiful and reliable essentials for your little ones.
             </p>
           </motion.div>
         </div>
@@ -35,10 +34,12 @@ export default function AboutPage() {
                 From Parents, For Parents <FiHeart className="text-pink-500" />
               </h2>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Limbaby kiddies started in 2020 when our founders — both parents of young children —
-                struggled to find a single trusted place for quality baby and kids products. They
-                wanted safety-certified car seats, organic clothing, educational toys, and everything
-                in between, without compromising on quality or style.
+                Limbaby Kiddies was created to make shopping for little ones easier, safer, and more enjoyable for parents.
+
+From clothing and shoes to toys, school bags, bicycles, and everyday accessories, we carefully choose quality products that parents can trust and children can enjoy.
+
+At Limbaby Kiddies, we believe every little one deserves the very best.
+
               </p>
               <p className="text-gray-600 leading-relaxed mb-4">
                 So they built Limbaby kiddies. A place where parents can shop with confidence, knowing

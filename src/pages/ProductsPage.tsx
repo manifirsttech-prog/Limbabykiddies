@@ -42,17 +42,29 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
-  const filteredProducts = useMemo(() => {
-    let result = products;
-    if (selectedCategory !== 'All') result = result.filter((p) => p.category === selectedCategory);
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query) || p.description.toLowerCase().includes(query)
-      );
-    }
-    return result;
-  }, [selectedCategory, searchQuery]);
+  // const filteredProducts = useMemo(() => {
+  //   let result = products;
+  //   if (selectedCategory !== 'All') result = result.filter((p) => p.category === selectedCategory);
+  //   if (searchQuery.trim()) {
+  //     const query = searchQuery.toLowerCase();
+  //     result = result.filter(
+  //       (p) => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query) || p.description.toLowerCase().includes(query)
+  //     );
+  //   }
+  //   return result;
+  // }, [selectedCategory, searchQuery]);
+
+   const filteredProducts = useMemo(() => {
+  let result = products;
+  if (selectedCategory !== 'All') result = result.filter((p) => p.category === selectedCategory);
+  if (searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    result = result.filter(
+      (p) => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query) || p.description.toLowerCase().includes(query)
+    );
+  }
+  return result;
+}, [products, selectedCategory, searchQuery]);
 
   if (loading) {
     return (

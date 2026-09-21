@@ -61,6 +61,22 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-32 relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-3 bg-white/90 backdrop-blur-md border-2 border-pink-200 px-5 py-2.5 rounded-full shadow-md mb-6"
+              >
+                <img 
+                  src="/logo.png" 
+                  alt="Limbaby Kiddies Logo" 
+                  className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-full border-2 border-pink-400 shadow-sm" 
+                />
+                <span className="font-extrabold text-gray-900 text-lg md:text-xl tracking-tight">
+                  Limbaby <span className="text-pink-500">Kiddies</span>
+                </span>
+              </motion.div>
+
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -133,6 +149,20 @@ export default function HomePage() {
               className="relative hidden lg:block"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full blur-3xl opacity-30"></div>
+              
+              {/* Floating Logo Badge */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute -top-4 -left-4 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-xl border-2 border-pink-200 flex items-center gap-3 z-10"
+              >
+                <img src="/logo.png" alt="Limbaby Logo" className="h-12 w-12 object-contain rounded-full border-2 border-pink-300 shadow-sm" />
+                <div>
+                  <p className="text-sm font-extrabold text-gray-900">Limbaby Kiddies</p>
+                  <p className="text-xs text-pink-500 font-semibold">100% Quality & Safety ✨</p>
+                </div>
+              </motion.div>
+
               <motion.img
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}

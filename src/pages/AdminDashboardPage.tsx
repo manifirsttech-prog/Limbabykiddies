@@ -256,7 +256,7 @@ export default function AdminDashboardPage() {
       <aside className="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col h-screen sticky top-0">
         <div className="p-6 border-b border-gray-100">
           <Link to="/" className="flex items-center gap-2">
-            <Baby className="h-7 w-7 text-pink-500" />
+            <img src="/logo.png" alt="Limbaby Kiddies Logo" className="h-7 w-7 object-contain rounded-full border border-pink-200" />
             <span className="text-lg font-bold text-gray-900">Limbaby <span className="text-pink-500">kiddies</span></span>
           </Link>
           <p className="text-xs text-gray-500 mt-1">Admin Panel</p>

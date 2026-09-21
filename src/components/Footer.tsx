@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { GiBabyBottle } from 'react-icons/gi';
 import { FiMail, FiPhone, FiMapPin, FiHeart } from 'react-icons/fi';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa';
 
@@ -17,7 +16,7 @@ export default function Footer() {
             transition={{ duration: 0.5 }}
           >
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <GiBabyBottle className="h-7 w-7 text-pink-400" />
+              <img src="/logo.png" alt="Limbaby Kiddies Logo" className="h-8 w-8 object-contain rounded-full border border-pink-400/30" />
               <span className="text-lg font-bold text-white">
                 Limbaby <span className="text-pink-400">kiddies</span>
               </span>
