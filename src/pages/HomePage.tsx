@@ -1,12 +1,14 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiTruck, FiShield, FiStar } from 'react-icons/fi';
 import { GiHeartBeats } from 'react-icons/gi';
-import { FaChild, FaHandsHelping, FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
 import AnimatedSection from '../components/AnimatedSection';
 import StaggerContainer, { StaggerItem } from '../components/StaggerContainer';
 import ProductCard from '../components/ProductCard';
-import { getFeaturedProducts, getBestSellers } from '../data/products';
+import { getLatestFromEachCategory, getBestSellers } from '../lib/firestore';
+import { Product } from '../types/product';
 
 const categories = [
   { name: 'Clothing', icon: FaTshirt, color: 'bg-pink-50 text-pink-700 border-pink-200' },
@@ -14,13 +16,43 @@ const categories = [
   { name: 'Toys', icon: FaGamepad, color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
   { name: 'School Bags', icon: FaGraduationCap, color: 'bg-green-50 text-green-700 border-green-200' },
   { name: 'Bicycles', icon: FaBicycle, color: 'bg-purple-50 text-purple-700 border-purple-200' },
-  { name: 'Car Seats', icon: FaCar, color: 'bg-red-50 text-red-700 border-red-200' },
-  { name: 'Baby Accessories', icon: FaBaby, color: 'bg-orange-50 text-orange-700 border-orange-200' },
+  { name: 'Others', icon: FaBaby, color: 'bg-orange-50 text-orange-700 border-orange-200' },
 ];
 
 export default function HomePage() {
-  const featured = getFeaturedProducts();
-  const bestSellers = getBestSellers();
+  const [featured, setFeatured] = useState<Product[]>([]);
+  const [bestSellers, setBestSellers] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const [latestProducts, bestSellerProducts] = await Promise.all([
+          getLatestFromEachCategory(),
+          getBestSellers()
+        ]);
+        setFeatured(latestProducts);
+        setBestSellers(bestSellerProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main>
@@ -89,7 +121,6 @@ export default function HomePage() {
                 transition={{ delay: 0.8 }}
                 className="mt-10 flex items-center gap-6 text-sm text-gray-500"
               >
-                <span className="flex items-center gap-1"><FiTruck className="text-pink-500" /> Free Shipping</span>
                 <span className="flex items-center gap-1"><FiShield className="text-pink-500" /> Safe & Secure</span>
                 <span className="flex items-center gap-1"><FiStar className="text-pink-500" /> 5-Star Rated</span>
               </motion.div>
@@ -105,8 +136,8 @@ export default function HomePage() {
               <motion.img
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                src="https://image.qwenlm.ai/generated-images/a6726451-73e6-4bf6-a673-34b1fa106b88/_result.png"
-                alt="Happy baby with toys"
+                src="https://image.qwenlm.ai/generated-images/3ba78c32-2572-4bde-806f-3abb4a9a9cb8/_result.png"
+                alt="Happy baby playing with toys and kids products"
                 className="relative rounded-3xl shadow-2xl w-full max-w-md mx-auto object-cover aspect-square border-4 border-white"
               />
             </motion.div>
@@ -139,13 +170,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Latest Products from Each Category */}
       <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
-              <p className="mt-2 text-gray-600">Handpicked favorites for your little ones</p>
+              <h2 className="text-3xl font-bold text-gray-900">Latest Arrivals</h2>
+              <p className="mt-2 text-gray-600">Newest products from each category</p>
             </div>
             <motion.div whileHover={{ x: 5 }}>
               <Link to="/products" className="hidden sm:flex items-center gap-1 text-pink-500 font-medium hover:text-pink-600">
@@ -153,8 +184,8 @@ export default function HomePage() {
               </Link>
             </motion.div>
           </AnimatedSection>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featured.slice(0, 4).map((product, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featured.map((product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             ))}
           </div>
@@ -169,14 +200,14 @@ export default function HomePage() {
               <motion.img
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                src="https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=600&h=400&fit=crop"
-                alt="Happy family"
+                src="https://image.qwenlm.ai/generated-images/a9ccbfec-22e9-480c-ad26-2932b80eb562/_result.png"
+                alt="Mother holding baby with love"
                 className="rounded-3xl shadow-xl w-full object-cover aspect-video"
               />
             </AnimatedSection>
             <AnimatedSection direction="right">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                Made with <GiHeartBeats className="text-pink-500" /> Love, for the Ones You Love Most
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Made with Love, for the Ones You Love Most
               </h2>
               <p className="text-gray-600 leading-relaxed mb-4">
                 At Limbaby kiddies, we believe every child deserves the best start in life. That's why we carefully

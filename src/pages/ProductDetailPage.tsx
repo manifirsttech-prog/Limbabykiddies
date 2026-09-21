@@ -1,25 +1,56 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiShoppingCart, FiTruck, FiShield, FiRotateCw, FiMinus, FiPlus, FiChevronRight, FiCheck } from 'react-icons/fi';
-import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
-import { getProductBySlug } from '../data/products';
+import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
+import { getProductBySlug } from '../lib/firestore';
 import { useCart } from '../context/CartContext';
 import AnimatedSection from '../components/AnimatedSection';
+import { formatPrice } from '../lib/utils';
+import { Product } from '../types/product';
 
 const categoryIcons: Record<string, React.ElementType> = {
   Clothing: FaTshirt, Shoes: FaShoePrints, 'School Bags': FaGraduationCap,
-  Bicycles: FaBicycle, 'Car Seats': FaCar, 'Baby Accessories': FaBaby, Toys: FaGamepad,
+  Bicycles: FaBicycle, 'Others': FaBaby, Toys: FaGamepad,
 };
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const product = getProductBySlug(slug || '');
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [addedToCart, setAddedToCart] = useState(false);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!slug) return;
+      
+      try {
+        const productData = await getProductBySlug(slug);
+        setProduct(productData);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProduct();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading product...</p>
+        </div>
+      </main>
+    );
+  }
 
   if (!product) {
     return (
@@ -49,7 +80,7 @@ export default function ProductDetailPage() {
     offers: {
       '@type': 'Offer',
       price: product.price,
-      priceCurrency: 'USD',
+      priceCurrency: 'NGN',
       availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
     },
   };
@@ -80,7 +111,7 @@ export default function ProductDetailPage() {
           </p>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{product.name}</h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-3xl font-bold text-pink-500 mb-4">
-            ${product.price.toFixed(2)}
+            {formatPrice(product.price)}
           </motion.p>
           <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
 
@@ -164,17 +195,9 @@ export default function ProductDetailPage() {
           </motion.button>
 
           <div className="mt-8 space-y-4 border-t-2 border-gray-100 pt-6">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} className="flex items-center gap-3 text-sm text-gray-600">
-              <FiTruck className="h-5 w-5 text-pink-500" />
-              <span>Free delivery on orders over $50</span>
-            </motion.div>
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }} className="flex items-center gap-3 text-sm text-gray-600">
               <FiShield className="h-5 w-5 text-pink-500" />
               <span>Safety certified and quality guaranteed</span>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }} className="flex items-center gap-3 text-sm text-gray-600">
-              <FiRotateCw className="h-5 w-5 text-pink-500" />
-              <span>30-day hassle-free returns</span>
             </motion.div>
           </div>
         </motion.section>

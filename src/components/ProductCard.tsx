@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiShoppingCart, FiEye, FiStar } from 'react-icons/fi';
-import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaCar, FaBaby, FaGamepad } from 'react-icons/fa';
+import { FaTshirt, FaShoePrints, FaGraduationCap, FaBicycle, FaBaby, FaGamepad } from 'react-icons/fa';
 import { Product } from '../types/product';
 import { useCart } from '../context/CartContext';
+import { formatPrice } from '../lib/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -15,8 +16,7 @@ const categoryIcons: Record<string, React.ElementType> = {
   Shoes: FaShoePrints,
   'School Bags': FaGraduationCap,
   Bicycles: FaBicycle,
-  'Car Seats': FaCar,
-  'Baby Accessories': FaBaby,
+  'Others': FaBaby,
   Toys: FaGamepad,
 };
 
@@ -93,7 +93,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           </h3>
         </Link>
         <div className="flex items-center justify-between mt-3">
-          <span className="text-lg font-bold text-gray-900">${product.price.toFixed(2)}</span>
+          <span className="text-lg font-bold text-gray-900">{formatPrice(product.price)}</span>
           {product.stock > 0 ? (
             <span className="text-xs text-green-600 font-medium">In Stock</span>
           ) : (

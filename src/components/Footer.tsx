@@ -40,7 +40,9 @@ export default function Footer() {
               <motion.a
                 whileHover={{ scale: 1.2, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
-                href="#"
+                href="https://www.instagram.com/Funmilolanahouli"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-pink-400 hover:bg-pink-900/30 transition-colors"
                 aria-label="Instagram"
               >
@@ -76,8 +78,9 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Clothing</Link></li>
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Shoes</Link></li>
+              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">School Bags</Link></li>
               <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Toys</Link></li>
-              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Baby Accessories</Link></li>
+              <li><Link to="/products" className="text-sm hover:text-pink-400 transition-colors">Others</Link></li>
             </ul>
           </motion.div>
 

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiShield, FiHeart } from 'react-icons/fi';
 import { GiHeartBeats } from 'react-icons/gi';
-import { FaChild, FaHandsHelping } from 'react-icons/fa';
+import { FaHandsHelping } from 'react-icons/fa';
 import { BsEmojiSmile } from 'react-icons/bs';
 import AnimatedSection from '../components/AnimatedSection';
 import StaggerContainer, { StaggerItem } from '../components/StaggerContainer';

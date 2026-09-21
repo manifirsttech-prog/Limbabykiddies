@@ -6,6 +6,7 @@ export interface Product {
   price: number;
   description: string;
   images: string[];
+  video?: string;
   sizes?: string[];
   colors?: string[];
   stock: number;
@@ -19,8 +20,7 @@ export type ProductCategory =
   | 'Shoes'
   | 'School Bags'
   | 'Bicycles'
-  | 'Car Seats'
-  | 'Baby Accessories'
+  | 'Others'
   | 'Toys';
 
 export interface CartItem {
@@ -28,13 +28,4 @@ export interface CartItem {
   quantity: number;
   selectedSize?: string;
   selectedColor?: string;
-}
-
-export interface Order {
-  id: string;
-  items: CartItem[];
-  total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
-  date: string;
-  customerName: string;
 }
