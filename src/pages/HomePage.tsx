@@ -200,14 +200,14 @@ export default function HomePage() {
               <motion.img
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
-                src="https://images.unsplash.com/photo-1476231682828-37e571bc172f?w=600&h=400&fit=crop"
-                alt="Happy family"
+                src="https://image.qwenlm.ai/generated-images/a9ccbfec-22e9-480c-ad26-2932b80eb562/_result.png"
+                alt="Mother holding baby with love"
                 className="rounded-3xl shadow-xl w-full object-cover aspect-video"
               />
             </AnimatedSection>
             <AnimatedSection direction="right">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                Made with <GiHeartBeats className="text-pink-500" /> Love, for the Ones You Love Most
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Made with Love, for the Ones You Love Most
               </h2>
               <p className="text-gray-600 leading-relaxed mb-4">
                 At Limbaby kiddies, we believe every child deserves the best start in life. That's why we carefully
