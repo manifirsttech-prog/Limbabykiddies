@@ -9,6 +9,7 @@ import AnimatedSection from '../components/AnimatedSection';
 import { formatPrice } from '../lib/utils';
 import SEO from '../components/SEO/SEO';
 import { createOrder, reduceMultipleProductsStock } from '../lib/firestore';
+import { sendOrderEmails } from '../lib/email';
 
 const categoryIcons: Record<string, React.ElementType> = {
   Clothing: FaTshirt,
@@ -54,7 +55,7 @@ const loadPaystackScript = (): Promise<boolean> => {
 };
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
+  const { items, removeFromCart, updateQuantity, updateItemSize, totalPrice, clearCart } = useCart();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrderRef, setPlacedOrderRef] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -75,6 +76,13 @@ export default function CartPage() {
     setIsProcessing(true);
 
     try {
+      const itemsWithoutSize = items.filter((item) => !item.selectedSize?.trim());
+      if (itemsWithoutSize.length > 0) {
+        alert('Please choose a size or product specification for every item before checkout.');
+        setIsProcessing(false);
+        return;
+      }
+
       // Check if all items have sufficient stock
       const outOfStockItems = items.filter(item => item.product.stock < item.quantity);
       if (outOfStockItems.length > 0) {
@@ -147,6 +155,30 @@ export default function CartPage() {
 
           // Save order to Firestore
           await createOrder(newOrderData);
+
+          // Send order emails to customer and admin
+          await sendOrderEmails({
+            customerName: customerInfo.name,
+            customerEmail: customerInfo.email,
+            customerPhone: customerInfo.phone,
+            customerAddress: `${customerInfo.address}, ${customerInfo.city}`,
+            notes: customerInfo.notes,
+            paymentReference: ref,
+            paymentMethod: 'Paystack',
+            total: orderTotal,
+            orderDate: new Date().toLocaleString('en-US', {
+              year: 'numeric', month: 'short', day: 'numeric',
+              hour: '2-digit', minute: '2-digit'
+            }),
+            items: items.map(item => ({
+              productName: item.product.name,
+              quantity: item.quantity,
+              price: item.product.price,
+              image: item.product.images[0] || '',
+              size: item.selectedSize || '',
+              color: item.selectedColor || ''
+            }))
+          });
           
           // Reduce stock for all ordered products
           const stockItems = items.map(item => ({
@@ -287,24 +319,49 @@ export default function CartPage() {
                       <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-2 flex-wrap">
                         <CatIcon className="h-3.5 w-3.5" />
                         {item.product.category}
-                        {item.selectedSize && <span>• Size: {item.selectedSize}</span>}
-                        {item.selectedColor && <span>• Color: {item.selectedColor}</span>}
+                        {item.selectedSize && <span> Size: {item.selectedSize.toUpperCase()}</span>}
+                        {item.selectedColor && <span> Color: {item.selectedColor}</span>}
                       </p>
                       {item.product.stock < 10 && item.product.stock > 0 && (
                         <p className="text-xs text-orange-600 font-medium mt-1">
-                          ⚠️ Only {item.product.stock} left in stock
+                           Only {item.product.stock} left in stock
                         </p>
                       )}
                       {item.product.stock === 0 && (
                         <p className="text-xs text-red-600 font-bold mt-1">
-                          ❌ Out of Stock
+                           Out of Stock
                         </p>
                       )}
                       {item.quantity > item.product.stock && item.product.stock > 0 && (
                         <p className="text-xs text-red-600 font-bold mt-1">
-                          ⚠️ Only {item.product.stock} available (you have {item.quantity} in cart)
+                           Only {item.product.stock} available (you have {item.quantity} in cart)
                         </p>
                       )}
+                      <div className="mt-3 max-w-xs">
+                        <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor={`size-${item.product.id}-${i}`}>
+                          Size / specification <span className="text-pink-500">*</span>
+                        </label>
+                        {item.product.sizes && item.product.sizes.length > 0 ? (
+                          <select
+                            id={`size-${item.product.id}-${i}`}
+                            value={item.selectedSize || ''}
+                            onChange={(event) => updateItemSize(item.product.id, item.selectedSize, item.selectedColor, event.target.value)}
+                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm uppercase focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300"
+                          >
+                            <option value="">Choose size</option>
+                            {item.product.sizes.map((size) => <option key={size} value={size}>{size.toUpperCase()}</option>)}
+                          </select>
+                        ) : (
+                          <input
+                            id={`size-${item.product.id}-${i}`}
+                            type="text"
+                            value={item.selectedSize || ''}
+                            onChange={(event) => updateItemSize(item.product.id, item.selectedSize, item.selectedColor, event.target.value)}
+                            placeholder="e.g. Small, 500ml, Large"
+                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm uppercase focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300"
+                          />
+                        )}
+                      </div>
                       <p className="font-bold text-pink-500 mt-1 text-lg">{formatPrice(item.product.price)}</p>
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center gap-2">
@@ -338,7 +395,7 @@ export default function CartPage() {
         </section>
 
         <aside className="lg:col-span-1">
-          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-2xl border-2 border-pink-100 p-6 shadow-lg sticky top-24">
+          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-2xl border-2 border-pink-100 p-6 shadow-lg lg:sticky lg:top-24">
             <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
               <FiFileText className="h-5 w-5 text-pink-500" /> Order Summary
             </h2>
@@ -373,10 +430,10 @@ export default function CartPage() {
 
               <div className="pt-2">
                 <motion.button type="submit" disabled={isProcessing} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  className="w-full bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-pink-200 text-base flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full min-h-14 relative z-10 appearance-none bg-pink-600 hover:bg-pink-700 active:bg-pink-800 !text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-pink-200 text-base flex items-center justify-center gap-2 disabled:opacity-50 disabled:bg-pink-500" style={{ backgroundColor: '#db2777', color: '#ffffff' }}
                 >
                   <FiLock className="h-4 w-4" />
-                  {isProcessing ? 'Processing Order...' : `Pay with Paystack — ${formatPrice(orderTotal)}`}
+                  {isProcessing ? 'Processing Order...' : `Pay with Paystack ${formatPrice(orderTotal)}`}
                 </motion.button>
               </div>
             </form>

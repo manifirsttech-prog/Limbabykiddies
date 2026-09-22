@@ -5,6 +5,7 @@ import { FaInstagram, FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
 import AnimatedSection from '../components/AnimatedSection';
 import SEO from '../components/SEO/SEO';
 import { createContactMessage } from '../lib/firestore';
+import { sendContactEmail } from '../lib/email';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -25,6 +26,14 @@ export default function ContactPage() {
         date: new Date().toISOString(),
         status: 'unread'
       });
+
+      await sendContactEmail({
+        name: form.name,
+        email: form.email,
+        whatsapp: form.whatsapp,
+        subject: form.subject,
+        message: form.message,
+      });
       
       setSubmitted(true);
     } catch (error) {
@@ -43,7 +52,7 @@ export default function ContactPage() {
         keywords="contact Limbaby Kiddies, baby store Lagos contact, customer service baby store Nigeria"
         canonical="/contact"
       />
-      <section className="bg-gradient-to-br from-pink-50 to-purple-50 py-16">
+      <section className="bg-linear-to-br from-pink-50 to-purple-50 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Get in Touch</h1>
@@ -146,7 +155,7 @@ export default function ContactPage() {
                       <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
                       <textarea id="message" required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 text-sm resize-none transition-all" placeholder="Tell us more..." />
                     </div>
-                    <motion.button type="submit" disabled={submitting} whileHover={{ scale: submitting ? 1 : 1.02 }} whileTap={{ scale: submitting ? 1 : 0.98 }} className={`w-full flex items-center justify-center gap-2 ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700'} text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-pink-200`}>
+                    <motion.button type="submit" disabled={submitting} whileHover={{ scale: submitting ? 1 : 1.02 }} whileTap={{ scale: submitting ? 1 : 0.98 }} className={`w-full flex items-center justify-center gap-2 ${submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700'} text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-pink-200`}>
                       {submitting ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

@@ -94,31 +94,31 @@ export default function AdminDashboardPage() {
     try {
       // Upload images to Cloudinary
       if (imageFiles && imageFiles.length > 0) {
-        console.log(`📸 Starting upload of ${imageFiles.length} image(s)...`);
+        console.log(`ðŸ“¸ Starting upload of ${imageFiles.length} image(s)...`);
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
-          console.log(`📷 Uploading image ${i + 1}/${imageFiles.length}: ${file.name}`);
+          console.log(`ðŸ“· Uploading image ${i + 1}/${imageFiles.length}: ${file.name}`);
           const url = await uploadImage(file);
-          console.log(`✅ Image ${i + 1} uploaded successfully:`, url);
+          console.log(`âœ… Image ${i + 1} uploaded successfully:`, url);
           uploadedImages.push(url);
         }
       }
 
       // Upload video to Cloudinary
       if (videoFile) {
-        console.log('🎥 Starting video upload:', videoFile.name);
+        console.log('ðŸŽ¥ Starting video upload:', videoFile.name);
         uploadedVideo = await uploadVideo(videoFile);
-        console.log('✅ Video uploaded successfully:', uploadedVideo);
+        console.log('âœ… Video uploaded successfully:', uploadedVideo);
       }
 
-      console.log('✅ All files uploaded successfully');
+      console.log('âœ… All files uploaded successfully');
       return { images: uploadedImages, video: uploadedVideo };
     } catch (error: any) {
-      console.error('❌ Error in uploadFiles:', error);
+      console.error('âŒ Error in uploadFiles:', error);
       
       // If we have some images uploaded, return those instead of failing completely
       if (uploadedImages.length > 0) {
-        console.log('⚠️ Some images uploaded successfully, continuing with partial upload');
+        console.log('âš ï¸ Some images uploaded successfully, continuing with partial upload');
         return { images: uploadedImages, video: uploadedVideo };
       }
       
@@ -149,12 +149,12 @@ export default function AdminDashboardPage() {
   const handleSave = async () => {
     setUploading(true);
     try {
-      console.log('🚀 Starting product save process...');
+      console.log('ðŸš€ Starting product save process...');
       
       // Upload files to Cloudinary
-      console.log('📤 Uploading files to Cloudinary...');
+      console.log('ðŸ“¤ Uploading files to Cloudinary...');
       const { images, video } = await uploadFiles();
-      console.log('✅ Files uploaded successfully:', { images, video });
+      console.log('âœ… Files uploaded successfully:', { images, video });
 
       // Build product data - Firestore doesn't accept undefined values
       const productData: any = {
@@ -185,7 +185,7 @@ export default function AdminDashboardPage() {
         productData.video = editingProduct.video;
       }
 
-      console.log('💾 Saving product to Firestore...');
+      console.log('ðŸ’¾ Saving product to Firestore...');
       
       if (editingProduct) {
         // Update existing product in Firestore
@@ -207,26 +207,26 @@ export default function AdminDashboardPage() {
         setProductList((prev) => [...prev, newProduct]);
       }
       
-      console.log('✅ Product saved successfully!');
+      console.log('âœ… Product saved successfully!');
       setShowModal(false);
-      alert(editingProduct ? '✅ Product updated successfully!' : '✅ Product added successfully!');
+      alert(editingProduct ? 'âœ… Product updated successfully!' : 'âœ… Product added successfully!');
     } catch (error: any) {
-      console.error('❌ Error saving product:', error);
-      console.error('🔍 Error details:', error);
+      console.error('âŒ Error saving product:', error);
+      console.error('ðŸ” Error details:', error);
       
       const errorMessage = error?.message || 'Unknown error occurred';
       
       // Provide helpful error messages based on common issues
       let helpMessage = '';
       if (errorMessage.includes('Upload preset') || errorMessage.includes('preset')) {
-        helpMessage = '\n\n💡 TIP: Check your Cloudinary upload preset settings:\n1. Go to Cloudinary Dashboard → Settings → Upload\n2. Find your upload preset "Lim baby"\n3. Make sure "Signing Mode" is set to "Unsigned"\n4. Save the settings';
+        helpMessage = '\n\nðŸ’¡ TIP: Check your Cloudinary upload preset settings:\n1. Go to Cloudinary Dashboard â†’ Settings â†’ Upload\n2. Find your upload preset "Lim baby"\n3. Make sure "Signing Mode" is set to "Unsigned"\n4. Save the settings';
       } else if (errorMessage.includes('File size') || errorMessage.includes('size')) {
-        helpMessage = '\n\n💡 TIP: Your file might be too large. Try:\n- Compressing the image\n- Using a smaller image (under 5MB)\n- Converting to JPG format';
+        helpMessage = '\n\nðŸ’¡ TIP: Your file might be too large. Try:\n- Compressing the image\n- Using a smaller image (under 5MB)\n- Converting to JPG format';
       } else if (errorMessage.includes('format') || errorMessage.includes('type')) {
-        helpMessage = '\n\n💡 TIP: Check your file format:\n- Images: Use JPG, PNG, GIF, or WebP\n- Videos: Use MP4, MOV, or WebM';
+        helpMessage = '\n\nðŸ’¡ TIP: Check your file format:\n- Images: Use JPG, PNG, GIF, or WebP\n- Videos: Use MP4, MOV, or WebM';
       }
       
-      alert(`❌ Error saving product:\n\n${errorMessage}${helpMessage}\n\n📋 Check browser console (F12) for detailed logs.`);
+      alert(`âŒ Error saving product:\n\n${errorMessage}${helpMessage}\n\nðŸ“‹ Check browser console (F12) for detailed logs.`);
     } finally {
       setUploading(false);
     }
@@ -399,7 +399,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (₦)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Price (â‚¦)</label>
                     <input type="number" step="0.01" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" />
                   </div>
                   <div>
@@ -496,7 +496,7 @@ function OverviewSection({ products, orders }: { products: Product[]; orders: Or
     { label: 'Total Products', value: totalProducts.toString(), icon: PackageCheck, color: 'bg-purple-100 text-purple-600' },
     { label: 'Active Products', value: activeProducts.toString(), icon: Package, color: 'bg-green-100 text-green-600' },
     { label: 'Total Revenue Generated', value: formatPrice(totalRevenueGenerated), icon: TrendingUp, color: 'bg-emerald-100 text-emerald-600' },
-    { label: 'Inventory Value', value: formatPrice(inventoryValue), icon: '₦', color: 'bg-blue-100 text-blue-600' },
+    { label: 'Inventory Value', value: formatPrice(inventoryValue), icon: 'â‚¦', color: 'bg-blue-100 text-blue-600' },
   ];
 
   return (
@@ -535,7 +535,7 @@ function OverviewSection({ products, orders }: { products: Product[]; orders: Or
               <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                 <div>
                   <p className="font-medium text-gray-900 text-sm">{order.customerName}</p>
-                  <p className="text-xs text-gray-500">{order.date} • {order.items?.length || 0} item(s)</p>
+                  <p className="text-xs text-gray-500">{order.date} â€¢ {order.items?.length || 0} item(s)</p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-pink-600 text-sm">{formatPrice(order.total)}</p>
@@ -568,7 +568,7 @@ function OverviewSection({ products, orders }: { products: Product[]; orders: Or
                 <img src={product.images[0]} alt={product.name} className="w-12 h-12 rounded-lg object-cover" />
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-900 truncate">{product.name}</p>
-                  <p className="text-sm text-gray-500">{product.category} • {formatPrice(product.price)}</p>
+                  <p className="text-sm text-gray-500">{product.category} â€¢ {formatPrice(product.price)}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-gray-900">{product.stock || 0} in stock</p>
@@ -789,7 +789,7 @@ function OrdersSection({ orders, onRefresh }: { orders: Order[]; onRefresh: () =
                         <div className="flex-1 min-w-0 w-full">
                           <p className="font-medium text-gray-900 text-sm">{item.productName}</p>
                           <div className="flex flex-wrap gap-2 mt-1">
-                            {item.size && <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Size: {item.size}</span>}
+                            {item.size && <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Size: {item.size.toUpperCase()}</span>}
                             {item.color && <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Color: {item.color}</span>}
                             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Qty: {item.quantity}</span>
                           </div>
@@ -984,8 +984,8 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
                       <p className="text-gray-700"><span className="font-medium">Stock:</span> {selectedProduct.stock} units</p>
                       <p className="text-gray-700"><span className="font-medium">Status:</span> <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${selectedProduct.status === 'active' ? 'bg-green-100 text-green-700' : selectedProduct.status === 'draft' ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-700'}`}>{selectedProduct.status}</span></p>
                       <p className="text-gray-700"><span className="font-medium">Slug:</span> <code className="bg-gray-100 px-2 py-0.5 rounded text-xs">{selectedProduct.slug}</code></p>
-                      {selectedProduct.featured && <p className="text-gray-700"><span className="font-medium">Featured:</span> <span className="text-yellow-600">⭐ Yes</span></p>}
-                      {selectedProduct.bestSeller && <p className="text-gray-700"><span className="font-medium">Best Seller:</span> <span className="text-yellow-600">🏆 Yes</span></p>}
+                      {selectedProduct.featured && <p className="text-gray-700"><span className="font-medium">Featured:</span> <span className="text-yellow-600">â­ Yes</span></p>}
+                      {selectedProduct.bestSeller && <p className="text-gray-700"><span className="font-medium">Best Seller:</span> <span className="text-yellow-600">ðŸ† Yes</span></p>}
                     </div>
                   </div>
 
