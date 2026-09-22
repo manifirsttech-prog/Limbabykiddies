@@ -34,7 +34,7 @@ const loadPaystackScript = (): Promise<boolean> => {
       // Wait for existing script to load
       existingScript.addEventListener('load', () => {
         // Wait a bit for PaystackPop to be available
-        setTimeout(() => resolve(!!(window as any).PaystackPop), 200);
+        setTimeout(() => resolve(!!(window as any).PaystackPop), 500);
       });
       return;
     }
@@ -46,7 +46,7 @@ const loadPaystackScript = (): Promise<boolean> => {
       // Wait for PaystackPop to be available after script loads
       setTimeout(() => {
         resolve(!!(window as any).PaystackPop);
-      }, 300);
+      }, 500);
     };
     script.onerror = () => resolve(false);
     document.body.appendChild(script);
@@ -102,6 +102,19 @@ export default function CartPage() {
       const loaded = await loadPaystackScript();
       if (!loaded || !(window as any).PaystackPop) {
         alert('Failed to load Paystack payment gateway. Please refresh the page and try again.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Additional check: wait a bit more if PaystackPop is still not ready
+      let retries = 0;
+      while (!(window as any).PaystackPop && retries < 5) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        retries++;
+      }
+
+      if (!(window as any).PaystackPop) {
+        alert('Payment system not ready. Please refresh the page and try again.');
         setIsProcessing(false);
         return;
       }
