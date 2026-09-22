@@ -20,33 +20,33 @@ const categoryIcons: Record<string, React.ElementType> = {
   Others: FaBaby,
 };
 
-// Dynamically load Paystack script
+// Dynamically load Paystack script without re-inserting the script or removing the SDK-owned iframe/overlay.
 const loadPaystackScript = (): Promise<boolean> => {
   return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve(false);
+      return;
+    }
+
     if ((window as any).PaystackPop) {
       resolve(true);
       return;
     }
-    
-    // Check if script is already loading
+
     const existingScript = document.querySelector('script[src*="paystack"]');
     if (existingScript) {
-      // Wait for existing script to load
       existingScript.addEventListener('load', () => {
-        // Wait a bit for PaystackPop to be available
-        setTimeout(() => resolve(!!(window as any).PaystackPop), 500);
-      });
+        setTimeout(() => resolve(!!(window as any).PaystackPop), 300);
+      }, { once: true });
+      existingScript.addEventListener('error', () => resolve(false), { once: true });
       return;
     }
-    
+
     const script = document.createElement('script');
     script.src = 'https://js.paystack.co/v1/inline.js';
     script.async = true;
     script.onload = () => {
-      // Wait for PaystackPop to be available after script loads
-      setTimeout(() => {
-        resolve(!!(window as any).PaystackPop);
-      }, 500);
+      setTimeout(() => resolve(!!(window as any).PaystackPop), 300);
     };
     script.onerror = () => resolve(false);
     document.body.appendChild(script);
@@ -61,23 +61,8 @@ export default function CartPage() {
   const [paymentMethod] = useState<'paystack'>('paystack');
   const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', phone: '', address: '', city: '', notes: '' });
 
-  // Cleanup Paystack iframe on component unmount (fixes mobile back button issue)
   useEffect(() => {
     return () => {
-      // Remove all Paystack-related elements
-      const paystackFrame = document.querySelector('iframe[src*="paystack"]');
-      if (paystackFrame) {
-        paystackFrame.remove();
-      }
-      const paystackContainer = document.querySelector('.paystack-container');
-      if (paystackContainer) {
-        paystackContainer.remove();
-      }
-      const overlay = document.querySelector('body > div[style*="position: fixed"]');
-      if (overlay && overlay.querySelector('iframe')) {
-        overlay.remove();
-      }
-      // Reset body styles
       document.body.style.overflow = '';
       document.body.style.position = '';
     };
@@ -184,64 +169,37 @@ export default function CartPage() {
         }
       };
 
-      const handler = (window as any).PaystackPop.setup({
+      const paystackHandler = (window as any).PaystackPop.setup({
         key: paystackKey,
         email: customerInfo.email,
-        amount: Math.round(orderTotal * 100), // Paystack expects amount in Kobo
+        amount: Math.round(orderTotal * 100),
         currency: 'NGN',
         ref: reference,
         metadata: {
           custom_fields: [
-            { display_name: "Customer Name", variable_name: "customer_name", value: customerInfo.name },
-            { display_name: "Phone Number", variable_name: "phone_number", value: customerInfo.phone },
-            { display_name: "Delivery Address", variable_name: "delivery_address", value: `${customerInfo.address}, ${customerInfo.city}` }
+            { display_name: 'Customer Name', variable_name: 'customer_name', value: customerInfo.name },
+            { display_name: 'Phone Number', variable_name: 'phone_number', value: customerInfo.phone },
+            { display_name: 'Delivery Address', variable_name: 'delivery_address', value: `${customerInfo.address}, ${customerInfo.city}` }
           ]
         },
         onClose: function() {
           setIsProcessing(false);
-          // Clean up Paystack iframe and overlay on mobile to prevent navigation blocking
-          setTimeout(() => {
-            const paystackFrame = document.querySelector('iframe[src*="paystack"]');
-            if (paystackFrame) {
-              paystackFrame.remove();
-            }
-            // Also remove any lingering Paystack overlays/containers
-            const paystackContainer = document.querySelector('.paystack-container');
-            if (paystackContainer) {
-              paystackContainer.remove();
-            }
-            const overlay = document.querySelector('body > div[style*="position: fixed"]');
-            if (overlay && overlay.querySelector('iframe[src*="paystack"]')) {
-              overlay.remove();
-            }
-            // Reset body scroll lock (Paystack sometimes locks body scroll)
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-          }, 100);
+          document.body.style.overflow = '';
+          document.body.style.position = '';
         },
         callback: function(response: any) {
           handlePaymentSuccess(response);
-          // Clean up Paystack iframe after successful payment
-          setTimeout(() => {
-            const paystackFrame = document.querySelector('iframe[src*="paystack"]');
-            if (paystackFrame) {
-              paystackFrame.remove();
-            }
-          }, 500);
         }
       });
 
-      // Add small delay before opening to ensure handler is fully initialized
-      if (handler && typeof handler.openIframe === 'function') {
-        setTimeout(() => {
-          try {
-            handler.openIframe();
-          } catch (err) {
-            console.error('Error opening Paystack iframe:', err);
-            alert('Failed to open payment window. Please try again.');
-            setIsProcessing(false);
-          }
-        }, 100);
+      if (paystackHandler && typeof paystackHandler.openIframe === 'function') {
+        try {
+          paystackHandler.openIframe();
+        } catch (err) {
+          console.error('Error opening Paystack iframe:', err);
+          alert('Failed to open payment window. Please try again.');
+          setIsProcessing(false);
+        }
       } else {
         throw new Error('Paystack handler not properly initialized');
       }
