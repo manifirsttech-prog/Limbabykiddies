@@ -13,6 +13,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useEffect } from 'react';
+import GlobalAlertModal from './components/GlobalAlertModal';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -57,6 +58,7 @@ export default function App() {
             <Route path="/admin/dashboard/products" element={<ProtectedRoute><AdminDashboardPage /></ProtectedRoute>} />
             <Route path="/admin/dashboard/messages" element={<ProtectedRoute><AdminDashboardPage /></ProtectedRoute>} />
           </Routes>
+                  <GlobalAlertModal />
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
