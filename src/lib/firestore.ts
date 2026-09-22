@@ -286,23 +286,23 @@ export const reduceProductStock = async (productId: string, quantityOrdered: num
   try {
     const productRef = doc(db, PRODUCTS_COLLECTION, productId);
     const productSnap = await getDoc(productRef);
-    
+
     if (!productSnap.exists()) {
       console.error(`Product ${productId} not found`);
       return;
     }
-    
-    const currentStock = productSnap.data().stock || 0;
+
+    const productData = productSnap.data();
+    const currentStock = productData.stock || 0;
     const newStock = Math.max(0, currentStock - quantityOrdered);
-    
-    // Update stock
-    await updateDoc(productRef, { 
+    const nextStatus = newStock === 0 ? 'out-of-stock' : productData.status === 'draft' ? 'draft' : 'active';
+
+    await updateDoc(productRef, {
       stock: newStock,
-      // If stock reaches 0, mark as out-of-stock
-      status: newStock === 0 ? 'out-of-stock' : productSnap.data().status
+      status: nextStatus
     });
-    
-    console.log(`✅ Stock updated for product ${productId}: ${currentStock} → ${newStock}`);
+
+    console.log(`✅ Stock updated for product ${productId}: ${currentStock} → ${newStock} | status: ${nextStatus}`);
   } catch (error) {
     console.error('Error reducing product stock:', error);
     throw error;

@@ -7,7 +7,7 @@ import {
   BarChart3, ExternalLink, Eye, MapPin, Phone, Mail, Upload, Image as ImageIcon, Video, MessageSquare
 } from 'lucide-react';
 import { uploadImage, uploadVideo } from '../lib/cloudinary';
-import { getAllProducts, addProduct, updateProduct, deleteProduct, getAllOrders, updateOrderStatus, getAllContactMessages, updateMessageStatus, deleteContactMessage } from '../lib/firestore';
+import { getAllProducts, addProduct, updateProduct, deleteProduct, getAllOrders, updateOrderStatus, deleteOrder, getAllContactMessages, updateMessageStatus, deleteContactMessage } from '../lib/firestore';
 import { Product, ProductCategory } from '../types/product';
 import { Order } from '../types/order';
 import { ContactMessage } from '../types/contact';
@@ -343,7 +343,7 @@ export default function AdminDashboardPage() {
             </h1>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden sm:block text-xs sm:text-sm text-gray-500 truncate max-w-[150px]">
+            <div className="hidden sm:block text-xs sm:text-sm text-gray-500 truncate max-w-[9.375rem]">
               {currentUser?.email}
             </div>
             <button 
@@ -430,7 +430,7 @@ export default function AdminDashboardPage() {
 
                 {/* Image Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
                     <ImageIcon className="h-4 w-4 text-pink-500" /> Product Images
                   </label>
                   <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-pink-300 transition-colors">
@@ -452,7 +452,7 @@ export default function AdminDashboardPage() {
 
                 {/* Video Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
                     <Video className="h-4 w-4 text-pink-500" /> Product Video (optional)
                   </label>
                   <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center hover:border-pink-300 transition-colors">
@@ -473,7 +473,7 @@ export default function AdminDashboardPage() {
               </div>
               <div className="flex gap-3 p-6 border-t border-gray-100">
                 <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setShowModal(false)} className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all" disabled={uploading}>Cancel</motion.button>
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleSave} disabled={uploading} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all disabled:opacity-50">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleSave} disabled={uploading} className="flex-1 px-4 py-2.5 bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all disabled:opacity-50">
                   {uploading ? 'Uploading...' : (editingProduct ? 'Update' : 'Add Product')}
                 </motion.button>
               </div>
@@ -816,7 +816,7 @@ function OrdersSection({ orders, onRefresh }: { orders: Order[]; onRefresh: () =
                 </div>
               </div>
               <div className="p-4 sm:p-6 border-t border-gray-100 flex gap-3">
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedOrder(null)} className="w-full px-4 py-2.5 sm:py-3 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedOrder(null)} className="w-full px-4 py-2.5 sm:py-3 bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
                   Close
                 </motion.button>
               </div>
@@ -835,7 +835,7 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
     <div>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
         <p className="text-sm text-gray-500">{products.length} products total</p>
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onAdd} className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition-all shadow-lg shadow-pink-200">
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onAdd} className="flex items-center gap-2 bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition-all shadow-lg shadow-pink-200">
           <Plus className="h-4 w-4" /> Add Product
         </motion.button>
       </motion.div>
@@ -860,7 +860,7 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <img src={product.images[0]} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
-                      <span className="text-sm font-medium text-gray-900 truncate max-w-[120px]">{product.name}</span>
+                      <span className="text-sm font-medium text-gray-900 truncate max-w-[7.5rem]">{product.name}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">{product.category}</td>
@@ -899,7 +899,7 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
               className="p-4"
             >
               <div className="flex gap-3 mb-3">
-                <img src={product.images[0]} alt={product.name} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+                <img src={product.images[0]} alt={product.name} className="w-16 h-16 rounded-lg object-cover shrink-0" />
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-gray-900 text-sm mb-1 truncate">{product.name}</h4>
                   <p className="text-xs text-gray-500 mb-1 truncate">{product.category}</p>
@@ -908,7 +908,7 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
                     <span className="text-xs text-gray-500 whitespace-nowrap">Stock: {product.stock}</span>
                   </div>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium h-fit flex-shrink-0 ${product.status === 'active' ? 'bg-green-100 text-green-700' : product.status === 'draft' ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-700'}`}>
+                <span className={`text-xs px-2 py-1 rounded-full font-medium h-fit shrink-0 ${product.status === 'active' ? 'bg-green-100 text-green-700' : product.status === 'draft' ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-700'}`}>
                   {product.status}
                 </span>
               </div>
@@ -919,7 +919,7 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
                 <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onEdit(product)} className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg transition-colors">
                   <Edit className="h-3.5 w-3.5" /> Edit
                 </motion.button>
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onDelete(product.id)} className="px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg transition-colors flex-shrink-0">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onDelete(product.id)} className="px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg transition-colors shrink-0">
                   <Trash2 className="h-3.5 w-3.5" />
                 </motion.button>
               </div>
@@ -1031,10 +1031,10 @@ function ProductsSection({ products, onAdd, onEdit, onDelete }: { products: Prod
               </div>
 
               <div className="p-4 sm:p-6 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => { setSelectedProduct(null); onEdit(selectedProduct); }} className="flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => { setSelectedProduct(null); onEdit(selectedProduct); }} className="flex-1 px-4 py-2.5 sm:py-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
                   <Edit className="h-4 w-4" /> Edit Product
                 </motion.button>
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedProduct(null)} className="flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
+                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setSelectedProduct(null)} className="flex-1 px-4 py-2.5 sm:py-3 bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl text-sm font-medium shadow-lg shadow-pink-200 transition-all">
                   Close
                 </motion.button>
               </div>
@@ -1191,7 +1191,7 @@ function MessagesSection({ messages, onRefresh }: { messages: ContactMessage[]; 
 
                 <div className="flex gap-3 pt-4">
                   {selectedMessage.status !== 'replied' && (
-                    <button onClick={() => handleMarkAsReplied(selectedMessage.id)} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl text-sm font-medium transition-all">
+                    <button onClick={() => handleMarkAsReplied(selectedMessage.id)} className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl text-sm font-medium transition-all">
                       Mark as Replied
                     </button>
                   )}

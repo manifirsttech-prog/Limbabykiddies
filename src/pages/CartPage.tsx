@@ -225,7 +225,7 @@ export default function CartPage() {
         )}
         <p className="text-sm text-gray-500 mb-8">We will contact you shortly on your provided phone number with delivery updates.</p>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Link to="/products" className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-lg">
+          <Link to="/products" className="inline-flex items-center gap-2 bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-lg">
             Continue Shopping <FiShoppingBag className="h-4 w-4" />
           </Link>
         </motion.div>
@@ -240,7 +240,7 @@ export default function CartPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Your Cart is Empty</h1>
         <p className="text-gray-600 mb-8">Looks like you haven't added anything to your cart yet.</p>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Link to="/products" className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-lg">
+          <Link to="/products" className="inline-flex items-center gap-2 bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-lg">
             Browse Products <FiShoppingBag className="h-4 w-4" />
           </Link>
         </motion.div>
@@ -373,7 +373,7 @@ export default function CartPage() {
 
               <div className="pt-2">
                 <motion.button type="submit" disabled={isProcessing} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-pink-200 text-base flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full bg-linear-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-pink-200 text-base flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <FiLock className="h-4 w-4" />
                   {isProcessing ? 'Processing Order...' : `Pay with Paystack — ${formatPrice(orderTotal)}`}
