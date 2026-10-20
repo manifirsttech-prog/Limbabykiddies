@@ -106,9 +106,9 @@ export default function AdminDashboardPage() {
 
       // Upload video to Cloudinary
       if (videoFile) {
-        console.log('ðŸŽ¥ Starting video upload:', videoFile.name);
+        console.log('🎥 Starting video upload:', videoFile.name);
         uploadedVideo = await uploadVideo(videoFile);
-        console.log('âœ… Video uploaded successfully:', uploadedVideo);
+        console.log('✅ Video uploaded successfully:', uploadedVideo);
       }
 
       console.log('âœ… All files uploaded successfully');
@@ -496,7 +496,7 @@ function OverviewSection({ products, orders }: { products: Product[]; orders: Or
     { label: 'Total Products', value: totalProducts.toString(), icon: PackageCheck, color: 'bg-purple-100 text-purple-600' },
     { label: 'Active Products', value: activeProducts.toString(), icon: Package, color: 'bg-green-100 text-green-600' },
     { label: 'Total Revenue Generated', value: formatPrice(totalRevenueGenerated), icon: TrendingUp, color: 'bg-emerald-100 text-emerald-600' },
-    { label: 'Inventory Value', value: formatPrice(inventoryValue), icon: 'â‚¦', color: 'bg-blue-100 text-blue-600' },
+    { label: 'Inventory Value', value: formatPrice(inventoryValue), icon: TrendingUp, color: 'bg-blue-100 text-blue-600' },
   ];
 
   return (

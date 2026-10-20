@@ -66,7 +66,7 @@ export default function ProductDetailPage() {
       <main className="max-w-7xl mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
         <p className="text-gray-600 mb-6">The product you're looking for doesn't exist.</p>
-        <Link to="/products" className="text-pink-500 font-medium hover:text-pink-600">â† Back to Products</Link>
+        <Link to="/products" className="text-pink-500 font-medium hover:text-pink-600">← Back to Products</Link>
       </main>
     );
   }
@@ -237,3 +237,4 @@ export default function ProductDetailPage() {
     </main>
   );
 }
+
